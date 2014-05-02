@@ -31,7 +31,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
     php > include 'vendor/autoload.php';
     php > $client = new PokitDok\Platform\PlatformClient('your_client_id', 'your_client_secret');
     php > $eligibility_request = array('payer_id' => "MOCKPAYER", 'member_id' => "W34237875729", 'provider_id' => "1467560003", 'provider_name' => "AYA-AY", 'provider_first_name' => "JEROME", 'provider_type' => "Person", 'member_name' => "JOHN DOE", 'member_birth_date' => "05/21/1975", 'service_types' => array("Health Benefit Plan Coverage"));
-    php > $eligibility_response = $client->eligibility($eligibility_request);
+    php > $eligibility_response = $client->eligibility($eligibility_request)->body();
 
     php > var_dump($eligibility_response);
 
