@@ -1,11 +1,10 @@
 <?php
-/**
- * Copyright (c) 2014 PokitDok Inc. See LICENSE.txt for details.
- *
- * User: timdunlevy
- * Date: 5/2/14
- * Time: 8:12 AM
- */
+// Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
+// http://www.pokitdok.com
+//
+// Please see the LICENSE.txt file for more information.
+// All other rights reserved.
+//
 
 namespace PokitDok\Common;
 

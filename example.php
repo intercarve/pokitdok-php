@@ -1,11 +1,13 @@
 <?php
-/**
- * Copyright (c) 2014 PokitDok Inc. See LICENSE.txt for details.
- *
- * Author: timdunlevy
- * Date: 4/24/14
- * Time: 9:55 PM
- */
+// Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
+// http://www.pokitdok.com
+//
+// Please see the LICENSE.txt file for more information.
+// All other rights reserved.
+//
+//	PokitDok Platform Client for PHP Example
+//		Consume the REST based PokitDok platform API
+//		https://platform.pokitdok.com/login#/documentation
 
 require_once 'vendor/autoload.php';
 // If not using composer remove previous line and uncomment following two lines

@@ -1,11 +1,13 @@
 <?php
-/**
- * Copyright (c) 2014 PokitDok Inc. See LICENSE.txt for details.
- *
- * Author: timdunlevy
- * Date: 4/28/14
- * Time: 9:09 PM
- */
+// Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
+// http://www.pokitdok.com
+//
+// Please see the LICENSE.txt file for more information.
+// All other rights reserved.
+//
+//	PokitDok Platform Client for PHP Tests
+//		Consume the REST based PokitDok platform API
+//		https://platform.pokitdok.com/login#/documentation
 
 
 namespace PokitDok\Tests;

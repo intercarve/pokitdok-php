@@ -21,8 +21,8 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 * [Report Issues on GitHub][issues]
 
 [apidocs]: https://platform.pokitdok.com/dashboard#/documentation
-[code]: https://github.com/PokitDokInc/pokitdok-php
-[issues]: https://github.com/PokitDokInc/pokitdok-php/issues
+[code]: https://github.com/PokitDok/pokitdok-php
+[issues]: https://github.com/PokitDok/pokitdok-php/issues
 
 ## Usage Example
 
