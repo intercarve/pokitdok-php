@@ -35,14 +35,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
             'service_types' => array("Health Benefit Plan Coverage")
         );
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = 'your client id';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'your client secret';
-
-// For internal testing only
-//    const POKITDOK_PLATFORM_API_CLIENT_ID = 'x';
-//    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'y';
-//    const POKITDOK_PLATFORM_API_SITE = 'http://me.pokitdok.com:5002';
-// end internal testing only
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'LNrngr9X4zkwAPdwI8uf';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'htr5ckvvhc9g83qqlapGt5APJE95a3yEsBZhUezV';
+    const POKITDOK_PLATFORM_API_SITE = 'http://me.pokitdok.com:5002';
+//    const POKITDOK_PLATFORM_API_SITE = 'https://platform.pokitdok.com'; // production
 
     /**
      * @var PlatformClient
@@ -170,18 +166,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      * @todo   Implement testEnrollment().
      */
     public function testEnrollment()
-    {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-    }
-
-    /**
-     * @covers PokitDok\Platform\PlatformClient::deductible
-     * @todo   Implement testDeductible().
-     */
-    public function testDeductible()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(

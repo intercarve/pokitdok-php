@@ -16,8 +16,11 @@ use PokitDok\Platform\PlatformClient;
 
 // Change to your PokitDok Platform API Client ID and Secret:
 //      Go to https://platform.pokitdok.com to get your API key
-define("POKITDOK_PLATFORM_API_CLIENT_ID", 'your client id');
-define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'your client secret');
+//define("POKITDOK_PLATFORM_API_CLIENT_ID", 'your client id');
+//define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'your client secret');
+define("POKITDOK_PLATFORM_API_CLIENT_ID", 'LNrngr9X4zkwAPdwI8uf');
+define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'htr5ckvvhc9g83qqlapGt5APJE95a3yEsBZhUezV');
+
 
 
 
@@ -26,16 +29,14 @@ try {
     $client = new PlatformClient(POKITDOK_PLATFORM_API_CLIENT_ID, POKITDOK_PLATFORM_API_CLIENT_SECRET);
 
 // For internal testing only
-//    define("POKITDOK_PLATFORM_API_CLIENT_ID", 'x');
-//    define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'y');
-//    define("POKITDOK_PLATFORM_API_SITE", 'http://me.pokitdok.com:5002');
-//    $client->setApiBaseUrl(
-//        POKITDOK_PLATFORM_API_SITE .
-//        PlatformClient::POKITDOK_PLATFORM_API_VERSION_PATH);
-//    $client->setApiTokenUrl(
-//        POKITDOK_PLATFORM_API_SITE .
-//        PlatformClient::POKITDOK_PLATFORM_API_TOKEN_URL
-//    );
+    define("POKITDOK_PLATFORM_API_SITE", 'http://me.pokitdok.com:5002');
+    $client->setApiBaseUrl(
+        POKITDOK_PLATFORM_API_SITE .
+        PlatformClient::POKITDOK_PLATFORM_API_VERSION_PATH);
+    $client->setApiTokenUrl(
+        POKITDOK_PLATFORM_API_SITE .
+        PlatformClient::POKITDOK_PLATFORM_API_TOKEN_URL
+    );
 // end internal testing only
 
     echo "Usage: ". print_r($client->usage(), true) . PHP_EOL;

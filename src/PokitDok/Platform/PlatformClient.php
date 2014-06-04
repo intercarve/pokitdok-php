@@ -35,6 +35,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_INSURANCE = '/price/insurance/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_CASH = '/price/cash/';
     const POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES = '/activities/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_FILES = '/files/';
 
 
     private $_usage = null;
@@ -97,7 +98,18 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
+     * Usage statistics for most recent request
+     *
      * @return \stdClass Object
+     * 	    rate_limit_cap, {int} The amount of requests available per hour
+     * 	    rate_limit_reset, {int} The time (Unix Timestamp) when the rate limit amount resets
+     *		rate_limit_amount, {int} The amount of requests made during the current rate limit period
+     *		credits_billed, {int} The amount of credits billed for this request
+     *		credits_remaining, {int} The amount of credits remaining on your API account
+     *		processing_time, {int} The time to process the request in milliseconds
+     *		next, {string}, A url pointing to the next page of results
+     *		previous, {string} A url pointing to the previous page of results
+     * @throws \Exception On data or API errors
      */
     public function usage()
     {
@@ -109,10 +121,25 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
+     * Retrieve the data for a specified provider id or query parameters
+     *
      * @param mixed $providers_request String of the PokitDok UUID for the provider OR Array of query parameters
-     * @throws \Exception On data or API errors
+     *  Query parameters:
+     * 	    name, Provider full name, any or all parts
+     *		first_name, Provider first name
+     *      middle_name, Provider middle name
+     *	    last_name, Provider first name
+     *	    specialty, Provider specialty name from NUCC/NPI taxonomy
+     *	    city, Provider city
+     *	    state, Provider state
+     *	    zipcode, Provider 5-digit zip code
+     *	    radius, Search distance from geographic centerpoint, with unit (e.g. “1mi” or “50mi”)
+     *		    (Only used when city, state, or zipcode is passed)
+     *	    gender, Provider gender
+     *	    npi_id, Provider NPI identifier
      * @return \PokitDok\Common\HttpResponse Response object with providers data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On data or API errors
      */
     public function providers($providers_request = '')
     {
@@ -127,10 +154,19 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
+     * Determine eligibility via an EDI 270 Request For Eligibility.
+     * 
      * @param array $eligibility_request Array of eligibility endpoint query parameters
-     * @throws \Exception
+     *  Post data form fields:
+     * 	    trading_partner_id, Unique id for the intended trading partner, as specified by the Payers resource
+     * 	    provider_id, Unique identifier for the provider , such as NPI, a PokitDok provider id, etc.
+     * 	    member_id, The named insured’s member identifier
+     * 	    member_name, The named insured’s name as specified on their policy
+     * 	    member_birth_date, The named insured’s birth date as specified on their policy
+     * 	    service_types, The line of coverage in the insurance policy this eligibility request is being made against
      * @return \PokitDok\Common\HttpResponse Response object with eligibility data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
     public function eligibility(array $eligibility_request)
     {
@@ -154,11 +190,15 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
-     * @param string $claims_file_name Fully qualified path to EDI 837 Professional Claim file
+     * Create a new claim, via the filing of an EDI 837 Professional Claims, to the designated Payer.
+     * (Not yet implemented)
+     *
+     * @param array $claims_request Array representing EDI 837 Professional Claim file
      * @return \PokitDok\Common\HttpResponse Response object with claims data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
-    public function claims($claims_file_name)
+    public function claims(array $claims_request)
     {
         $this->request(
             'POST',
@@ -170,9 +210,13 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
-     * @param array $claims_status Array of claims/status endpoint query parameters
+     * Ascertain the status of the specified claim, via the filing of an EDI 276 Claims Status.
+     * (Not yet implemented)
+     *
+     * @param array $claims_status Array representing EDI 276 Claims Status
      * @return \PokitDok\Common\HttpResponse Response object with claimsStatus data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
     public function claimsStatus(array $claims_status)
     {
@@ -187,52 +231,19 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
-     * @param string $enrollment_file_name Fully qualified path to EDI 834 benefit enrollment file
+     * File an EDI 834 benefit enrollment.
+     *
+     * @param array $enrollment_request representing 834 benefit enrollment
      * @return \PokitDok\Common\HttpResponse Response object with enrollment data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
-    public function enrollment($enrollment_file_name)
+    public function enrollment(array $enrollment_request)
     {
         $this->request(
             'POST',
             self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT,
-            array(
-                'enrollment' =>
-                    "@". $enrollment_file_name .";type=text/plain;filename=". basename($enrollment_file_name)
-        ));
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * @param string $deductible_file_name Fully qualified path to an EDI 270 file
-     * @return \PokitDok\Common\HttpResponse Response object with deductible data,
-     *      see API documentation on https://platform.pokitdok.com/
-     */
-    public function deductible($deductible_file_name)
-    {
-        $this->request(
-            'POST',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_DEDUCTIBLE,
-            array(
-                'enrollment' =>
-                    "@". $deductible_file_name .";type=text/plain;filename=". basename($deductible_file_name)
-        ));
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * @param array $payers_request Array of payer query parameters
-     * @return \PokitDok\Common\HttpResponse Response object with payers data,
-     *      see API documentation on https://platform.pokitdok.com/
-     */
-    public function payers(array $payers_request)
-    {
-        $this->request(
-            'GET',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_PAYERS,
-            $payers_request,
+            $enrollment_request,
             "application/json"
         );
 
@@ -240,9 +251,35 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
+     * Use the /payers/ API to determine available payer_id values for use with other endpoints
+     *
+     * @param array $payers_request Array of payer query parameters
+     * @return \PokitDok\Common\HttpResponse Response object with payers data,
+     *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function payers(array $payers_request)
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_PAYERS,
+            $payers_request
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Return a list of insurance prices for a given procedure (by CPT Code) in a given region (by ZIP Code).
+     * (Not yet implemented)
+     *
      * @param array $price_insurance_request Array of price query parameters
+     *  Query parameters:
+     * 	    cpt_code, {string} The CPT code of the procedure in question.
+     *		zipcode, {string} Postal code in which to search for procedures
      * @return \PokitDok\Common\HttpResponse Response object with priceInsurance data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
     public function priceInsurance(array $price_insurance_request)
     {
@@ -257,9 +294,16 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
+     * Return a list of cash prices for a given procedure (by CPT Code) in a given region (by ZIP Code).
+     * (Not yet implemented)
+     *
      * @param array $price_cash_request Array of price query parameters
+     *  Query parameters:
+     * 	    cpt_code, {string} The CPT code of the procedure in question.
+     *		zipcode, {string} Postal code in which to search for procedures
      * @return \PokitDok\Common\HttpResponse Response object with priceCash data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
     public function priceCash(array $price_cash_request)
     {
@@ -274,17 +318,68 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
+     * Call the activities endpoint to get a listing of current activities,
+     * a query string parameter ‘parent_id’ may also be used with this API to get information about 
+     * sub-activities that were initiated from a batch file upload.
+     *
      * @param mixed $activities_request String of the PokitDok ID for the activity OR Array of query parameters
+     *  Query parameters:
+     *  _id, {string} ID of this Activity
+     *  name, {string} Activity name
+     *  callback_url, {string} URL that will be invoked to notify the client application that this Activity has completed.  
+     *  	We recommend that you always use https for callback URLs used by your application.
+     *  file_url, {string} URL where batch transactions that were uploaded to be processed within this activity are stored.  
+     *  	X12 files uploaded via the /files endpoint are stored here.
+     *  history, {list} Historical status of the progress of this Activity
+     *  state, {dict} Current state of this Activity
+     *  transition_path, {list} The list of state transitions that will be used for this Activity.
+     *  remaining_transitions, {list} The list of remaining state transitions that the activity has yet to go through.
+     *  parameters, {dict} The parameters that were originally supplied to the activity
+     *  units_of_work, {int} The number of ‘units of work’ that the activity is operating on.  
+     *  	This will typically be 1 for real-time requests like /eligibility.  
+     *  	When uploading batch X12 files via the /files endpoint, this will be the number of ‘transactions’ within 
+     *  	that file.  For example, if a client application POSTs a file of 20 eligibility requests to the /files API, 
+     *  	the units_of_work value for that activity will be 20 after the X12 file has been analyzed.  If an activity 
+     *  	does show a value greater than 1 for units_of_work, the client application can fetch detailed information 
+     *  	about each one of the activities processing those units of work by using the 
+     *  	/activities/?parent_id=&lt;activity_id&gt; API
      * @return \PokitDok\Common\HttpResponse Response object with activities data,
      *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
      */
     public function activities($activities_request = '')
     {
         $this->request(
             'GET',
             self::POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES,
-            $activities_request,
-            "application/json"
+            $activities_request
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Submit X12 formatted EDI file for batch processing.
+     *
+     * @param string $edi_file full path and filename of EDI file to submit
+     * @param string $trading_partner_id The trading partner id
+     * @param string $callback_url Optional notification url to be called when the asynchronous processing is complete
+     * @return \PokitDok\Common\HttpResponse
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function files($edi_file, $trading_partner_id, $callback_url = null)
+    {
+        $post_params = array();
+        $post_params['claim'] = "@". $edi_file .";type=application/EDI-X12;filename=". basename($edi_file);
+        $post_params['trading_partner_id'] = $trading_partner_id;
+        if ($callback_url !== null) {
+            $post_params['callback_url'] = $callback_url;
+        }
+
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_FILES,
+            $post_params
         );
 
         return $this->applyResponse();
