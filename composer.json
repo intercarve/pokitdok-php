@@ -5,7 +5,7 @@
     "type": "library",
     "keywords": ["health", "healthcare", "edi", "x12", "claims", "eligibility", "provider", "doctor", "patient"],
     "minimum-stability": "stable",
-    "license": "TBD",
+    "license": "MIT",
     "authors": [
         {
             "name": "Tim Dunlevy",
