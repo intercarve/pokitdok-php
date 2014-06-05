@@ -1,6 +1,5 @@
 {
     "name": "pokitdok/pokitdok-php",
-    "version": "1.0.1",
     "description": "PHP client for http://platform.pokitdok.com",
     "type": "library",
     "keywords": ["health", "healthcare", "edi", "x12", "claims", "eligibility", "provider", "doctor", "patient"],
