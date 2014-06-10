@@ -25,7 +25,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_SITE = 'https://platform.pokitdok.com';
 
     const POKITDOK_PLATFORM_API_TOKEN_URL = '/oauth2/token';
-    const POKITDOK_PLATFORM_API_VERSION_PATH = '/api/v3';
+    const POKITDOK_PLATFORM_API_VERSION_PATH = '/api/v4';
 
     const POKITDOK_PLATFORM_API_ENDPOINT_ELIGIBILITY = '/eligibility/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PROVIDERS = '/providers/';
@@ -116,7 +116,19 @@ class PlatformClient extends Oauth2ApplicationClient
     public function usage()
     {
         if (!isset($this->_usage)) {
-            $this->eligibility(array());
+            $this->eligibility(
+                array(
+                    'member' => array(
+                        'id' => "W000000000",
+                        'birth_date' => "1970-01-01",
+                        'last_name' => "Doe"
+                    ),
+                    'provider' => array(
+                        'npi' => "1467560003",
+                        'last_name' => "AYA-AY",
+                        'first_name' => "JEROME"
+                    )
+                ));
         }
 
         return $this->_usage;
@@ -158,14 +170,7 @@ class PlatformClient extends Oauth2ApplicationClient
     /**
      * Determine eligibility via an EDI 270 Request For Eligibility.
      * 
-     * @param array $eligibility_request Array of eligibility endpoint query parameters
-     *  Post data form fields:
-     * 	    trading_partner_id, Unique id for the intended trading partner, as specified by the Payers resource
-     * 	    provider_id, Unique identifier for the provider , such as NPI, a PokitDok provider id, etc.
-     * 	    member_id, The named insured’s member identifier
-     * 	    member_name, The named insured’s name as specified on their policy
-     * 	    member_birth_date, The named insured’s birth date as specified on their policy
-     * 	    service_types, The line of coverage in the insurance policy this eligibility request is being made against
+     * @param array $eligibility_request Array representing an EDI 270 Request For Eligibility as JSON
      * @return \PokitDok\Common\HttpResponse Response object with eligibility data,
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
@@ -193,9 +198,8 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Create a new claim, via the filing of an EDI 837 Professional Claims, to the designated Payer.
-     * (Not yet implemented)
      *
-     * @param array $claims_request Array representing EDI 837 Professional Claim file
+     * @param array $claims_request Array representing EDI 837 Professional Claim as JSON
      * @return \PokitDok\Common\HttpResponse Response object with claims data,
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
@@ -205,7 +209,8 @@ class PlatformClient extends Oauth2ApplicationClient
         $this->request(
             'POST',
             self::POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS,
-            array('claim' => "@". $claims_file_name .";type=text/plain;filename=". basename($claims_file_name))
+            $claims_request,
+            "application/json"
         );
 
         return $this->applyResponse();
@@ -213,9 +218,8 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Ascertain the status of the specified claim, via the filing of an EDI 276 Claims Status.
-     * (Not yet implemented)
      *
-     * @param array $claims_status Array representing EDI 276 Claims Status
+     * @param array $claims_status Array representing EDI 276 Claims Status as JSON
      * @return \PokitDok\Common\HttpResponse Response object with claimsStatus data,
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
@@ -235,7 +239,7 @@ class PlatformClient extends Oauth2ApplicationClient
     /**
      * File an EDI 834 benefit enrollment.
      *
-     * @param array $enrollment_request representing 834 benefit enrollment
+     * @param array $enrollment_request representing 834 benefit enrollment as JSON
      * @return \PokitDok\Common\HttpResponse Response object with enrollment data,
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
@@ -255,17 +259,15 @@ class PlatformClient extends Oauth2ApplicationClient
     /**
      * Use the /payers/ API to determine available payer_id values for use with other endpoints
      *
-     * @param array $payers_request Array of payer query parameters
      * @return \PokitDok\Common\HttpResponse Response object with payers data,
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function payers(array $payers_request)
+    public function payers()
     {
         $this->request(
             'GET',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_PAYERS,
-            $payers_request
+            self::POKITDOK_PLATFORM_API_ENDPOINT_PAYERS
         );
 
         return $this->applyResponse();
@@ -372,7 +374,7 @@ class PlatformClient extends Oauth2ApplicationClient
     public function files($edi_file, $trading_partner_id, $callback_url = null)
     {
         $post_params = array();
-        $post_params['claim'] = "@". $edi_file .";type=application/EDI-X12;filename=". basename($edi_file);
+        $post_params['file'] = "@". $edi_file .";type=application/EDI-X12;filename=". basename($edi_file);
         $post_params['trading_partner_id'] = $trading_partner_id;
         if ($callback_url !== null) {
             $post_params['callback_url'] = $callback_url;

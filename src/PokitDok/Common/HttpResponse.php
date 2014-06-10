@@ -9,17 +9,24 @@
 namespace PokitDok\Common;
 
 
-use PokitDok\Platform\PlatformClient;
-
 class HttpResponse {
+
+    const HTTP_HEADER_BREAK = "\r\n\r\n";
 
     private $_response;
     private $_header_length;
+    private $_headers;
+    private $_body;
 
-    public function __construct($response, $header_length)
+    public function __construct($response)
     {
         $this->_response = $response;
-        $this->_header_length = $header_length;
+        $this->_header_length = strpos($response, self::HTTP_HEADER_BREAK) + strlen(self::HTTP_HEADER_BREAK);
+        $this->_headers = array();
+        $this->_body = "";
+
+        $this->header();
+        $this->body();
     }
 
     /**
@@ -27,9 +34,13 @@ class HttpResponse {
      */
     public function header()
     {
+        if (!empty($this->_headers)) {
+            return $this->_headers;
+        }
+
         $raw_header = substr($this->_response, 0, $this->_header_length);
         $lines = explode("\r\n", $raw_header);
-        $headers = array();
+
         foreach ($lines as $line)
         {
             if (empty($line)) {
@@ -37,14 +48,14 @@ class HttpResponse {
             }
             $sep_pos = strpos($line, ':');
             if ($sep_pos !== false) {
-                $headers[trim(substr($line, 0, $sep_pos))] =
+                $this->_headers[trim(substr($line, 0, $sep_pos))] =
                     trim(substr($line, $sep_pos+1, strlen($line) - ($sep_pos+1)));
             } else {
-                $headers[trim($line)] = '';
+                $this->_headers[trim($line)] = '';
             }
         }
 
-        return $headers;
+        return $this->_headers;
     }
 
     /**
@@ -52,10 +63,15 @@ class HttpResponse {
      */
     public function body()
     {
+        if (!empty($this->_body)) {
+            return $this->_body;
+        }
+
         $raw_body = substr($this->_response, $this->_header_length);
 
         $body = json_decode($raw_body);
+        $this->_body = ($body === false ? $raw_body : $body);
 
-        return ($body === false ? $raw_body : $body);
+        return $this->_body;
     }
 }

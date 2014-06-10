@@ -208,13 +208,13 @@ class Oauth2ApplicationClient {
 
         $response = curl_exec($this->_ch);
 
-        $this->_response = new HttpResponse($response, curl_getinfo($this->_ch, CURLINFO_HEADER_SIZE));
+        $this->_response = new HttpResponse($response);
         $this->_status = curl_getinfo($this->_ch, CURLINFO_HTTP_CODE);
 
         curl_close($this->_ch);
 
         if ($this->_status > 299) {
-            throw new \Exception($this->_response->body(), $this->_status);
+            throw new \Exception(json_encode($this->_response->body()->data->errors), $this->_status);
         }
 
         return $this->_status;

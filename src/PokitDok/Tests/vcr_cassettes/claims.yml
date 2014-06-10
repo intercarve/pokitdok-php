@@ -1,0 +1,39 @@
+
+-
+    request:
+        method: POST
+        url: 'http://me.pokitdok.com:5002/api/v4/claims/'
+        headers:
+            Host: 'me.pokitdok.com:5002'
+            Authorization: 'Bearer 2EpzBdMVBZa1yNVnFH5TuToF7eWKJ2ivyEpNfZP4'
+            Content-Type: ' application/json'
+            Content-Length: '768'
+        body: '{"transaction_code":"chargeable","trading_partner_id":"MOCKPAYER","billing_provider":{"taxonomy_code":"207Q00000X","first_name":"Jerome","last_name":"Aya-Ay","npi":"1467560003","address":{"address_lines":["8311 WARREN H ABERNATHY HWY"],"city":"SPARTANBURG","state":"SC","zipcode":"29301"},"tax_id":"123456789"},"subscriber":{"first_name":"Jane","last_name":"Doe","member_id":"W000000000","address":{"address_lines":["123 N MAIN ST"],"city":"SPARTANBURG","state":"SC","zipcode":"29301"},"birth_date":"1970-01-01","gender":"female"},"claim":{"total_charge_amount":60,"service_lines":[{"procedure_code":"99213","charge_amount":60,"unit_count":1,"diagnosis_codes":["487.1"],"service_date":"2014-06-01"}]},"payer":{"organization_name":"Acme Ins Co","plan_id":"1234567890"}}'
+    response:
+        status: 200
+        headers:
+            Content-Type: 'text/html; charset=utf-8'
+            Content-Length: '2093'
+            mimetype: application/json
+            charset: utf-8
+            Server: 'Werkzeug/0.9.4 Python/2.7.3'
+            Date: 'Tue, 10 Jun 2014 21:37:30 GMT'
+        body: '{"meta": {"rate_limit_amount": 9, "rate_limit_reset": 1402439369, "test_mode": true, "processing_time": 38, "rate_limit_cap": 1000, "credits_remaining": -10, "credits_billed": 1}, "data": {"units_of_work": 1, "name": "claims", "parameters": {"claim": {"plan_participation": "assigned", "provider_signature": true, "total_charge_amount": "60", "claim_frequency": "original", "place_of_service": "office", "direct_payment": "y", "patient_signature_on_file": true, "information_release": "informed_consent", "service_lines": [{"diagnosis_codes": ["487.1"], "unit_count": "1", "unit_type": "units", "charge_amount": "60", "service_date": "2014-06-01", "procedure_code": "99213"}]}, "trading_partner_id": "MOCKPAYER", "payer": {"organization_name": "Acme Ins Co", "plan_id": "1234567890"}, "subscriber": {"first_name": "Jane", "last_name": "Doe", "gender": "female", "member_id": "W000000000", "payer_responsibility": "primary", "address": {"address_lines": ["123 N MAIN ST"], "state": "SC", "zipcode": "29301", "city": "SPARTANBURG"}, "birth_date": "1970-01-01"}, "correlation_id": "b8a2f746-9180-4393-b0bf-4bbe1884b6d2", "client_id": "JcR2P8SmoIaon4vpN9Q9", "receiver": {"organization_name": "TIM_TEST Test", "id": "JcR2P8SmoIaon4vpN9Q9"}, "submitter": {"organization_name": "PokitDok, Inc.", "id": "453504565"}, "billing_provider": {"first_name": "Jerome", "last_name": "Aya-Ay", "npi": "1467560003", "taxonomy_code": "207Q00000X", "address": {"address_lines": ["8311 WARREN H ABERNATHY HWY"], "state": "SC", "zipcode": "29301", "city": "SPARTANBURG"}, "tax_id": "123456789"}, "transaction_code": "chargeable"}, "remaining_transitions": ["generate", "store", "transmit", "wait", "receive", "process", "complete"], "state": {"name": "scheduled", "title": "Scheduled for next available transmission to Trading Partner"}, "trading_partner_id": "MOCKPAYER", "id": "53977a9a56c02c32cd1d4200", "transition_path": ["schedule", "generate", "store", "transmit", "wait", "receive", "process", "complete"], "history": [{"record_dt": "2014-06-10T21:37:30.579298", "name": "init", "title": "Initializing"}]}}'
+-
+    request:
+        method: POST
+        url: 'http://me.pokitdok.com:5002/oauth2/token'
+        headers:
+            Host: 'me.pokitdok.com:5002'
+            Content-Length: '29'
+        body: grant_type=client_credentials
+    response:
+        status: 400
+        headers:
+            Content-Type: application/json;charset=UTF-8
+            Content-Length: '28'
+            Pragma: no-cache
+            Cache-Control: no-store
+            Server: 'Werkzeug/0.9.4 Python/2.7.3'
+            Date: 'Tue, 10 Jun 2014 21:50:22 GMT'
+        body: '{"access_token": "2EpzBdMVBZa1yNVnFH5TuToF7eWKJ2ivyEpNfZP4", "token_type": "bearer", "expires": 1402425700, "expires_in": 3600}'

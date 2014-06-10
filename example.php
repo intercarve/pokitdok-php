@@ -20,8 +20,8 @@ use PokitDok\Platform\PlatformClient;
 //      Go to https://platform.pokitdok.com to get your API key
 //define("POKITDOK_PLATFORM_API_CLIENT_ID", 'your client id');
 //define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'your client secret');
-define("POKITDOK_PLATFORM_API_CLIENT_ID", 'LNrngr9X4zkwAPdwI8uf');
-define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'htr5ckvvhc9g83qqlapGt5APJE95a3yEsBZhUezV');
+define("POKITDOK_PLATFORM_API_CLIENT_ID", 'JcR2P8SmoIaon4vpN9Q9');
+define("POKITDOK_PLATFORM_API_CLIENT_SECRET", 'JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X');
 
 
 
@@ -51,24 +51,89 @@ try {
         print_r($providers_response->body(), true) .
         PHP_EOL;
 
+    echo "Payers: ". print_r($client->payers()->body()) . PHP_EOL;
+
     echo "Eligibility Response: ".
         print_r(
             $client->eligibility(
                 array(
-                    'payer_id' => "MOCKPAYER",
-                    'member_id' => "W34237875729",
-                    'provider_id' => "1467560003",
-                    'provider_name' => "AYA-AY",
-                    'provider_first_name' => "JEROME",
-                    'provider_type' => "Person",
-                    'member_name' => "JOHN DOE",
-                    'member_birth_date' => "05/21/1975",
-                    'service_types' => array("Health Benefit Plan Coverage")
+                    'member' => array(
+                        'id' => "W000000000",
+                        'birth_date' => "1970-01-01",
+                        'last_name' => "Doe"
+                    ),
+                    'provider' => array(
+                        'npi' => "1467560003",
+                        'last_name' => "AYA-AY",
+                        'first_name' => "JEROME"
+                    ),
+                    'service_types' => array("health_benefit_plan_coverage"),
+                    'trading_partner_id' => "MOCKPAYER"
                 )
             )->body(),
             true
         ) .
         PHP_EOL;
+
+    echo "File upload: ".
+        print_r(
+            $client->files("./src/PokitDok/Tests/general-physician-office-visit.270", "MOCKPAYER")->body()
+        ) .
+        PHP_EOL;
+
+    $claim_response = $client->claims(
+            array(
+                'transaction_code' => "chargeable",
+                'trading_partner_id' => "MOCKPAYER",
+                'billing_provider' => array(
+                    'taxonomy_code' => "207Q00000X",
+                    'first_name' => "Jerome",
+                    'last_name' => "Aya-Ay",
+                    'npi' => "1467560003",
+                    'address' => array(
+                        'address_lines' => array(
+                            "8311 WARREN H ABERNATHY HWY"
+                        ),
+                        'city' => "SPARTANBURG",
+                        'state' => "SC",
+                        'zipcode' => "29301"
+                    ),
+                    'tax_id' => "123456789"
+                ),
+                'subscriber' => array(
+                    'first_name' => "Jane",
+                    'last_name' => "Doe",
+                    'member_id' => "W000000000",
+                    'address' => array(
+                        'address_lines' => array("123 N MAIN ST"),
+                        'city' => "SPARTANBURG",
+                        'state' => "SC",
+                        'zipcode' => "29301"
+                    ),
+                    'birth_date' => "1970-01-01",
+                    'gender' => "female"
+                ),
+                'claim' => array(
+                    'total_charge_amount' => 60.0,
+                    'service_lines' => array(
+                        array(
+                            'procedure_code' => "99213",
+                            'charge_amount' => 60.0,
+                            'unit_count' => 1.0,
+                            'diagnosis_codes' => array(
+                                "487.1"
+                            ),
+                            'service_date' => "2014-06-01"
+                        )
+                    )
+                ),
+                "payer" =>
+                    array(
+                        'organization_name' => "Acme Ins Co",
+                        'plan_id' => "1234567890"
+                    )
+            ));
+    echo "Claim Response: ". print_r($claim_response->body(), true) . PHP_EOL;
 
 } catch (\Exception $e) {
     echo "Exception (". $e->getCode() ."): ". $e->getMessage();
