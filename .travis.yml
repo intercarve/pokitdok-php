@@ -5,6 +5,6 @@ php:
   - 5.5
   - hhvm
 install:
-  - composer require "pokitdok/pokitdok-php:1.0.5"
+  - composer require "pokitdok/pokitdok-php:1.0.7"
 script:
   - phpunit src/PokitDok/Tests/
