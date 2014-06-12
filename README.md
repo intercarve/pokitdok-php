@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/pokitdok/pokitdok-php.svg?branch=master)](https://travis-ci.org/pokitdok/pokitdok-php)
+[![Gem Version](https://badge.fury.io/rb/pokitdok-php.svg)](http://badge.fury.io/rb/pokitdok-php)
+[![Dependency Freshness](https://www.versioneye.com/user/projects/538e498b46c4739edd0000ee/badge.svg)](https://www.versioneye.com/user/projects/538e498b46c4739edd0000ee)
+
 pokitdok-php
 =============
 
