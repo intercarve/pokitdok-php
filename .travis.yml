@@ -1,0 +1,12 @@
+language: php
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - hhvm
+env:
+  - POKITDOK_VERSION="dev-master"
+install:
+  - composer require pokitdok/pokitdok-php:${POKITDOK_VERSION}
+script:
+  - phpunit src/PokitDok/Tests/
