@@ -3,8 +3,7 @@ php:
   - 5.3
   - 5.4
   - 5.5
-  - hhvm
 install:
-  - composer require "pokitdok/pokitdok-php:1.0.8"
+  - composer require "pokitdok/pokitdok-php:1.0.9"
 script:
   - phpunit src/PokitDok/Tests/
