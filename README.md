@@ -8,14 +8,18 @@ PokitDok [Platform API][apidocs] Client for PHP
 ## Installation
 Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json file if you use Composer to manage the dependencies of your project. Here is a minimal example of a composer.json:
 
+```json
     {
         "require": {
             "pokitdok/pokitdok-php": "dev-master"
         }
     }
+```
 
 ## Tests
+```
     phpunit src/PokitDok/Tests/
+```
 
 ## Resources
 * [Read the PokitDok API docs][apidocs]
@@ -28,6 +32,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 
 ## Quick Start
 
+```php
     # initialize environment
     composer init --require="pokitdok/pokitdok-php:dev-master"
     composer install
@@ -133,7 +138,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 
     #retrieve an index of activities
     $client->activities();
-
+```
 
 ## Tested PHP Versions
 This library aims to support and is tested against these PHP versions:
