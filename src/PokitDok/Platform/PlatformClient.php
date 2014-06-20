@@ -127,7 +127,9 @@ class PlatformClient extends Oauth2ApplicationClient
                         'npi' => "1467560003",
                         'last_name' => "AYA-AY",
                         'first_name' => "JEROME"
-                    )
+		),
+		'trading_partner_id' => 'MOCKPAYER',
+		"service_types" => array("health_benefit_plan_coverage")
                 ));
         }
 
