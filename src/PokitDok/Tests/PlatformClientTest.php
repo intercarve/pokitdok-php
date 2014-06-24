@@ -30,6 +30,7 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         'member' => array(
             'id' => "W000000000",
             'birth_date' => "1970-01-01",
+            'first_name' => "Jane",
             'last_name' => "Doe"
         ),
         'provider' => array(
@@ -116,7 +117,8 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
         $this->object->setApiBaseUrl(
             self::POKITDOK_PLATFORM_API_SITE .
-            PlatformClient::POKITDOK_PLATFORM_API_VERSION_PATH);
+            PlatformClient::POKITDOK_PLATFORM_API_VERSION_PATH
+        );
         $this->object->setApiTokenUrl(
             self::POKITDOK_PLATFORM_API_SITE .
             PlatformClient::POKITDOK_PLATFORM_API_TOKEN_URL

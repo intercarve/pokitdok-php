@@ -8,12 +8,12 @@
             Content-Length: '29'
         body: grant_type=client_credentials
     response:
-        status: 400
+        status: 200
         headers:
             Content-Type: application/json;charset=UTF-8
-            Content-Length: '28'
+            Content-Length: '127'
             Pragma: no-cache
             Cache-Control: no-store
             Server: 'Werkzeug/0.9.4 Python/2.7.3'
-            Date: 'Fri, 20 Jun 2014 13:31:59 GMT'
-        body: '{"access_token": "qKE3SZmasg64YcIK7Z25XcXeTyVJVhUHwLxvrHdH", "token_type": "bearer", "expires": 1403274983, "expires_in": 3600}'
+            Date: 'Tue, 24 Jun 2014 12:45:19 GMT'
+        body: '{"access_token": "LlxBFBBHL97g6RI8NngbH4z56X0NqhiJ5DMSbUMw", "token_type": "bearer", "expires": 1403617468, "expires_in": 3600}'
