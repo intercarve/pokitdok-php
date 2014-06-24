@@ -121,6 +121,7 @@ class PlatformClient extends Oauth2ApplicationClient
                     'member' => array(
                         'id' => "W000000000",
                         'birth_date' => "1970-01-01",
+                        'first_name' => "Jane",
                         'last_name' => "Doe"
                     ),
                     'provider' => array(

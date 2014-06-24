@@ -4,6 +4,6 @@ php:
   - 5.4
   - 5.5
 install:
-  - composer require "pokitdok/pokitdok-php:1.0.15"
+  - composer require "pokitdok/pokitdok-php:1.0.16"
 script:
   - phpunit src/PokitDok/Tests/
