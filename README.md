@@ -3,7 +3,7 @@
 pokitdok-php
 =============
 
-PokitDok [Platform API][apidocs] Client for PHP
+PokitDok [Platform API][apisite] Client for PHP
 
 ## Installation
 Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json file if you use Composer to manage the dependencies of your project. Here is a minimal example of a composer.json:
@@ -26,6 +26,7 @@ phpunit src/PokitDok/Tests/
 * [View Source on GitHub][code]
 * [Report Issues on GitHub][issues]
 
+[apisite]: https://platform.pokitdok.com/dashboard#/
 [apidocs]: https://platform.pokitdok.com/dashboard#/documentation
 [code]: https://github.com/PokitDok/pokitdok-php
 [issues]: https://github.com/PokitDok/pokitdok-php/issues
