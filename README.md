@@ -26,8 +26,8 @@ phpunit src/PokitDok/Tests/
 * [View Source on GitHub][code]
 * [Report Issues on GitHub][issues]
 
-[apisite]: https://platform.pokitdok.com/dashboard#/
-[apidocs]: https://platform.pokitdok.com/dashboard#/documentation
+[apisite]: https://platform.pokitdok.com/
+[apidocs]: https://platform.pokitdok.com/documentation
 [code]: https://github.com/PokitDok/pokitdok-php
 [issues]: https://github.com/PokitDok/pokitdok-php/issues
 
