@@ -34,8 +34,8 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT = '/enrollment/';
     const POKITDOK_PLATFORM_API_ENDPOINT_DEDUCTIBLE = '/deductible/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PAYERS = '/payers/';
-    const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_INSURANCE = '/price/insurance/';
-    const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_CASH = '/price/cash/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_INSURANCE = '/prices/insurance';
+    const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_CASH = '/prices/cash';
     const POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES = '/activities/';
     const POKITDOK_PLATFORM_API_ENDPOINT_FILES = '/files/';
 
@@ -288,7 +288,7 @@ class PlatformClient extends Oauth2ApplicationClient
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function priceInsurance(array $price_insurance_request)
+    public function pricesInsurance(array $price_insurance_request)
     {
         $this->request(
             'GET',
@@ -312,7 +312,7 @@ class PlatformClient extends Oauth2ApplicationClient
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function priceCash(array $price_cash_request)
+    public function pricesCash(array $price_cash_request)
     {
         $this->request(
             'GET',

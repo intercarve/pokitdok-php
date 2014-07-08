@@ -284,33 +284,25 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers PokitDok\Platform\PlatformClient::priceInsurance
-     * @todo   Implement testPriceInsurance().
+     * @covers PokitDok\Platform\PlatformClient::pricesInsurance
      */
-    public function testPriceInsurance()
+    public function testPricesInsurance()
     {
-        VCR::insertCassette("price_insurance.yml");
+        VCR::insertCassette("prices_insurance.yml");
 
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->object->pricesInsurance(array('cpt_code' => "87799", 'zip_code' => "32218"));
 
         VCR::eject();
     }
 
     /**
-     * @covers PokitDok\Platform\PlatformClient::priceCash
-     * @todo   Implement testPriceCash().
+     * @covers PokitDok\Platform\PlatformClient::pricesCash
      */
     public function testPriceCash()
     {
-        VCR::insertCassette("price_cash.yml");
+        VCR::insertCassette("prices_cash.yml");
 
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+        $this->object->pricesCash(array('cpt_code' => "87799", 'zip_code' => "32218"));
 
         VCR::eject();
     }

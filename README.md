@@ -43,6 +43,12 @@ require_once('vendor/autoload.php');
 use PokitDok\Platform\PlatformClient;
 $client = new PokitDok\Platform\PlatformClient('your_client_id', 'your_client_secret');
 
+# Retrieve cash price information by zip and CPT code
+$client->pricesCash(array('cpt_code' => "87799", 'zip_code' => "32218"));
+
+# Retrieve insurance price information by zip and CPT code
+$client->pricesInsurance(array('cpt_code' => "87799", 'zip_code' => "32218"));
+
 # Retrieve provider information by NPI
 $client->providers('1467560003');
 
