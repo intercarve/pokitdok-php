@@ -58,8 +58,8 @@ $client->providers(array('first_name' => "Jerome", 'last_name' => "Aya-Ay"));
 $client->providers(array('organization_name' => "Qliance"));
 
 # Search providers by location and/or specialty
-$client->providers(array('zipcode' => "90210", 'radius' => "10mi"));
-$client->providers(array('zipcode' => "90210", 'radius' => "10mi", 'specialty' => "RHEUMATOLOGY"));
+$client->providers(array('zipcode' => "29307", 'radius' => "10mi"));
+$client->providers(array('zipcode' => "29307", 'radius' => "10mi", 'specialty' => "RHEUMATOLOGY"));
 
 # Submit a v4 eligibility request
 $client->eligibility(array(
