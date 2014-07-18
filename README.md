@@ -79,8 +79,7 @@ $client->eligibility(array(
 ));
 
 # Submit a v4 claims request
-$client->claims(
-array(
+$client->claims(array(
     'transaction_code' => "chargeable",
     'trading_partner_id' => "MOCKPAYER",
     'billing_provider' => array(
@@ -131,6 +130,24 @@ array(
 	    'plan_id' => "1234567890"
 	)
 ));
+
+# Check the status of a claim
+$claims_status = $client->claimsStatus(array(
+    "patient" => array(
+        "birth_date" => "1970-01-01",
+        "first_name" => "JANE",
+        "last_name" => "DOE",
+        "id" => "1234567890"
+    ),
+    "provider" => array(
+        "first_name" => "Jerome",
+        "last_name" => "Aya-Ay",
+        "npi" => "1467560003",
+    ),
+    "service_date" => "2014-01-01",
+    "trading_partner_id" => "MOCKPAYER"
+));
+
 
 # Submit X12 files directly for processing on the platform
 $client->files("./src/PokitDok/Tests/general-physician-office-visit.270", "MOCKPAYER");
