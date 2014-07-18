@@ -30,7 +30,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_ELIGIBILITY = '/eligibility/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PROVIDERS = '/providers/';
     const POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS = '/claims/';
-    const POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS_STATUS = '/claims/status/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS_STATUS = '/claims/status';
     const POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT = '/enrollment/';
     const POKITDOK_PLATFORM_API_ENDPOINT_DEDUCTIBLE = '/deductible/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PAYERS = '/payers/';
