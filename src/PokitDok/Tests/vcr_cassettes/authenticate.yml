@@ -18,5 +18,5 @@
             Pragma: no-cache
             Cache-Control: no-store
             Server: 'Werkzeug/0.9.4 Python/2.7.3'
-            Date: 'Thu, 07 Aug 2014 18:42:31 GMT'
-        body: '{"access_token": "9VKU218xxZBYos6Ptgj0a2s1AjYMOuDBdDbOTDNW", "token_type": "bearer", "expires": 1407440552, "expires_in": 3600}'
+            Date: 'Thu, 07 Aug 2014 20:19:11 GMT'
+        body: '{"access_token": "Ffk0SKat5lsWl9g0uw6ua06SETvQ70NDSFr6UVId", "token_type": "bearer", "expires": 1407446351, "expires_in": 3600}'

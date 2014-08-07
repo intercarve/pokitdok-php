@@ -5,16 +5,16 @@
         url: 'http://me.pokitdok.com:5002/api/v4/tradingpartners/MOCKPAYER'
         headers:
             Host: 'me.pokitdok.com:5002'
-            Authorization: 'Bearer 9VKU218xxZBYos6Ptgj0a2s1AjYMOuDBdDbOTDNW'
+            Authorization: 'Bearer Ffk0SKat5lsWl9g0uw6ua06SETvQ70NDSFr6UVId'
             Content-Type: ' application/json'
             Content-Length: '0'
     response:
         status: 200
         headers:
             Content-Type: 'text/html; charset=utf-8'
-            Content-Length: '373'
+            Content-Length: '372'
             mimetype: application/json
             charset: utf-8
             Server: 'Werkzeug/0.9.4 Python/2.7.3'
-            Date: 'Thu, 07 Aug 2014 18:42:33 GMT'
-        body: '{"meta": {"rate_limit_amount": 30, "rate_limit_reset": 1407440004, "application_mode": "production", "processing_time": 10, "rate_limit_cap": 1000, "activity_id": "53e3c89956c02c1e03ebf7aa"}, "data": {"is_enabled": false, "supported_transactions": ["270", "276", "834", "835", "837", "270", "271", "276", "277", "278"], "id": "MOCKPAYER", "name": "Mock Payer for Testing"}}'
+            Date: 'Thu, 07 Aug 2014 20:19:12 GMT'
+        body: '{"meta": {"rate_limit_amount": 20, "rate_limit_reset": 1407445042, "application_mode": "production", "processing_time": 9, "rate_limit_cap": 1000, "activity_id": "53e3df4056c02c2843ebf7aa"}, "data": {"is_enabled": false, "supported_transactions": ["270", "276", "834", "835", "837", "270", "271", "276", "277", "278"], "id": "MOCKPAYER", "name": "Mock Payer for Testing"}}'

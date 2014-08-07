@@ -14,8 +14,8 @@ namespace PokitDok\Tests;
 
 require_once 'vendor/autoload.php';
 // If not using composer remove previous line and uncomment following two lines
-// require_once 'src/PokitDok/Common/Oauth2ApplicationClient.php';
-// require_once 'src/PokitDok/Platform/PlatformClient.php';
+//require_once 'src/PokitDok/Common/Oauth2ApplicationClient.php';
+//require_once 'src/PokitDok/Platform/PlatformClient.php';
 
 use VCR\VCR as VCR;
 VCR::configure()->setCassettePath(__DIR__ . "/vcr_cassettes");

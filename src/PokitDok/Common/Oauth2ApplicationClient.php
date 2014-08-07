@@ -113,8 +113,15 @@ class Oauth2ApplicationClient {
         $this->get_handle();
         curl_setopt($this->_ch, CURLOPT_URL, $this->_api_token_url);
         curl_setopt($this->_ch, CURLOPT_POST, true);
-        curl_setopt($this->_ch, CURLOPT_POSTFIELDS, array("grant_type"=>"client_credentials",
-        "client_id"=>$this->_client_id, "client_secret"=>$this->_client_secret));
+        curl_setopt(
+            $this->_ch,
+            CURLOPT_POSTFIELDS,
+            array(
+                "grant_type"=>"client_credentials",
+                "client_id"=>$this->_client_id,
+                "client_secret"=>$this->_client_secret
+            )
+        );
         if ($this->_ch === false) {
             throw new \Exception(curl_error($this->_ch), curl_errno($this->_ch));
         }
