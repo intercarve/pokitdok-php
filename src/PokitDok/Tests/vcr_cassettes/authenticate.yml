@@ -5,8 +5,11 @@
         url: 'http://me.pokitdok.com:5002/oauth2/token'
         headers:
             Host: 'me.pokitdok.com:5002'
-            Content-Length: '29'
-        body: grant_type=client_credentials
+            Content-Type: 'application/x-www-form-urlencoded; charset=utf-8'
+        post_fields:
+            grant_type: client_credentials
+            client_id: JcR2P8SmoIaon4vpN9Q9
+            client_secret: JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X
     response:
         status: 200
         headers:
@@ -15,5 +18,5 @@
             Pragma: no-cache
             Cache-Control: no-store
             Server: 'Werkzeug/0.9.4 Python/2.7.3'
-            Date: 'Tue, 24 Jun 2014 12:45:19 GMT'
-        body: '{"access_token": "LlxBFBBHL97g6RI8NngbH4z56X0NqhiJ5DMSbUMw", "token_type": "bearer", "expires": 1403617468, "expires_in": 3600}'
+            Date: 'Thu, 07 Aug 2014 18:42:31 GMT'
+        body: '{"access_token": "9VKU218xxZBYos6Ptgj0a2s1AjYMOuDBdDbOTDNW", "token_type": "bearer", "expires": 1407440552, "expires_in": 3600}'

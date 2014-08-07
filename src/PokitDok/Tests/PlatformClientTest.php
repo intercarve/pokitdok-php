@@ -14,8 +14,8 @@ namespace PokitDok\Tests;
 
 require_once 'vendor/autoload.php';
 // If not using composer remove previous line and uncomment following two lines
-//require_once 'src/PokitDok/Common/Oauth2ApplicationClient.php';
-//require_once 'src/PokitDok/Platform/PlatformClient.php';
+// require_once 'src/PokitDok/Common/Oauth2ApplicationClient.php';
+// require_once 'src/PokitDok/Platform/PlatformClient.php';
 
 use VCR\VCR as VCR;
 VCR::configure()->setCassettePath(__DIR__ . "/vcr_cassettes");
@@ -193,7 +193,7 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute('rate_limit_amount', $usage);
         $this->assertObjectHasAttribute('rate_limit_reset', $usage);
-        $this->assertObjectHasAttribute('test_mode', $usage);
+        $this->assertObjectHasAttribute('application_mode', $usage);
         $this->assertObjectHasAttribute('processing_time', $usage);
         $this->assertObjectHasAttribute('rate_limit_cap', $usage);
         $this->assertObjectHasAttribute('credits_remaining', $usage);
@@ -319,6 +319,35 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('meta', $activities);
         $this->assertObjectHasAttribute('data', $activities);
         $this->assertObjectHasAttribute('units_of_work', $activities->data[0]);
+
+        VCR::eject();
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::tradingpartners with no id
+     */
+    public function testTradingPartnersIndex()
+    {
+        VCR::insertCassette("trading_partners_index.yml");
+
+        $trading_partners = $this->object->trading_partners()->body();
+
+        $this->assertObjectHasAttribute('meta', $trading_partners);
+        $this->assertObjectHasAttribute('data', $trading_partners);
+
+        VCR::eject();
+    }
+    /**
+     * @covers PokitDok\Platform\PlatformClient::tradingpartners with MOCKPAYER
+     */
+    public function testTradingPartnersGet()
+    {
+        VCR::insertCassette("trading_partners_get.yml");
+
+        $trading_partners = $this->object->trading_partners('MOCKPAYER')->body();
+
+        $this->assertObjectHasAttribute('meta', $trading_partners);
+        $this->assertObjectHasAttribute('data', $trading_partners);
 
         VCR::eject();
     }
