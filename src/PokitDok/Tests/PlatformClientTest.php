@@ -193,7 +193,7 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute('rate_limit_amount', $usage);
         $this->assertObjectHasAttribute('rate_limit_reset', $usage);
-        $this->assertObjectHasAttribute('test_mode', $usage);
+        $this->assertObjectHasAttribute('application_mode', $usage);
         $this->assertObjectHasAttribute('processing_time', $usage);
         $this->assertObjectHasAttribute('rate_limit_cap', $usage);
         $this->assertObjectHasAttribute('credits_remaining', $usage);
@@ -319,6 +319,35 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('meta', $activities);
         $this->assertObjectHasAttribute('data', $activities);
         $this->assertObjectHasAttribute('units_of_work', $activities->data[0]);
+
+        VCR::eject();
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::tradingpartners with no id
+     */
+    public function testTradingPartnersIndex()
+    {
+        VCR::insertCassette("trading_partners_index.yml");
+
+        $trading_partners = $this->object->trading_partners()->body();
+
+        $this->assertObjectHasAttribute('meta', $trading_partners);
+        $this->assertObjectHasAttribute('data', $trading_partners);
+
+        VCR::eject();
+    }
+    /**
+     * @covers PokitDok\Platform\PlatformClient::tradingpartners with MOCKPAYER
+     */
+    public function testTradingPartnersGet()
+    {
+        VCR::insertCassette("trading_partners_get.yml");
+
+        $trading_partners = $this->object->trading_partners('MOCKPAYER')->body();
+
+        $this->assertObjectHasAttribute('meta', $trading_partners);
+        $this->assertObjectHasAttribute('data', $trading_partners);
 
         VCR::eject();
     }

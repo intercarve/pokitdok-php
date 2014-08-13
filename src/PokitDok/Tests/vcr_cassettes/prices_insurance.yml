@@ -1,0 +1,20 @@
+
+-
+    request:
+        method: GET
+        url: 'http://me.pokitdok.com:5002/api/v4/prices/insurance?cpt_code=87799&zip_code=32218'
+        headers:
+            Host: 'me.pokitdok.com:5002'
+            Authorization: 'Bearer Ffk0SKat5lsWl9g0uw6ua06SETvQ70NDSFr6UVId'
+            Content-Type: ' application/json'
+            Content-Length: '0'
+    response:
+        status: 200
+        headers:
+            Content-Type: 'text/html; charset=utf-8'
+            Content-Length: '958'
+            mimetype: application/json
+            charset: utf-8
+            Server: 'Werkzeug/0.9.4 Python/2.7.3'
+            Date: 'Thu, 07 Aug 2014 20:19:12 GMT'
+        body: '{"meta": {"rate_limit_amount": 16, "rate_limit_reset": 1407445042, "application_mode": "production", "processing_time": 37, "rate_limit_cap": 1000, "credits_remaining": 9994, "activity_id": "53e3df4056c02c283bebf7aa", "credits_billed": 1}, "data": {"amounts": [{"high_price": 159.75, "standard_deviation": 36.41382675904168, "average_price": 54.5895, "payer_type": "insurance", "payment_type": "allowed", "low_price": 19.98, "median_price": 56.25}, {"high_price": 188.91, "standard_deviation": 26.57623445180863, "average_price": 104.77350000000001, "payer_type": "insurance", "payment_type": "submitted", "low_price": 88.02, "median_price": 97.02}, {"average_price": 82.336343612, "payer_type": "medicare", "payment_type": "allowed"}, {"average_price": 100.28768722, "payer_type": "medicare", "payment_type": "submitted"}, {"average_price": 57.623480175999994, "payer_type": "medicare", "payment_type": "paid"}], "cpt_code": "87799", "geo_zip_area": "322"}}'
