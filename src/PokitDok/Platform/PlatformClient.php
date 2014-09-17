@@ -39,6 +39,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES = '/activities/';
     const POKITDOK_PLATFORM_API_ENDPOINT_FILES = '/files/';
     const POKITDOK_PLATFORM_API_ENDPOINT_TRADING_PARTNERS = '/tradingpartners/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_PLANS = '/plans/';
 
 
     private $_usage = null;
@@ -414,4 +415,33 @@ class PlatformClient extends Oauth2ApplicationClient
 
        return $this->applyResponse();
      }
+
+     /**
+      * Retrieve data on plans based on the parameters given.
+      *
+      * @param array $plans_request Array of query parameters.
+      * Query Parameters:
+      *   trading_partner_id, {string} The trading partner id of the payer
+      *     offering the plan.
+      *   county, {string} The county in which the plan is available.
+      *   state, {string} The state in which the plan is available.
+      *   plan_id, {string} The identifier for the plan.
+      *   plan_type, {string} The type of plan (e.g. EPO, PPO, HMO, POS).
+      *   plan_name, {string} The name of the plan.
+      *   metallic_level, {string} The metal level of the plan.
+      * @return \PokitDok\Common\HttpResponse Response object with plans data,
+      *         see documentation on https://platform.pokitdok.com/
+      * @throws \Exception On HTTP errors (status > 299)
+      */
+      public function plans(array $plans_request = array())
+      {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_PLANS,
+            $plans_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+      }
 }

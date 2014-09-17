@@ -337,6 +337,7 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
         VCR::eject();
     }
+
     /**
      * @covers PokitDok\Platform\PlatformClient::tradingpartners with MOCKPAYER
      */
@@ -348,6 +349,36 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertObjectHasAttribute('meta', $trading_partners);
         $this->assertObjectHasAttribute('data', $trading_partners);
+
+        VCR::eject();
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::plans with no arguments
+     */
+    public function testPlansNoArguments()
+    {
+        VCR::insertCassette("plans_no_arg.yml");
+
+        $plans_no_arg = $this->object->plans()->body();
+
+        $this->assertObjectHasAttribute('meta', $plans_no_arg);
+        $this->assertObjectHasAttribute('data', $plans_no_arg);
+
+        VCR::eject();
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::plans with arguments
+     */
+    public function testPlans()
+    {
+        VCR::insertCassette("plans.yml");
+
+        $plans = $this->object->plans(array('state' => "TX", 'plan_type' => "PPO"))->body();
+
+        $this->assertObjectHasAttribute('meta', $plans);
+        $this->assertObjectHasAttribute('data', $plans);
 
         VCR::eject();
     }
