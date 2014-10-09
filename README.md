@@ -12,7 +12,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 	"require": {
 		"pokitdok/pokitdok-php": "*"
 	},
-    	"minimum-stability": "dev"
+	"minimum-stability": "dev"
 }
 ```
 
