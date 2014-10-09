@@ -10,7 +10,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 ```json
 {
 	"require": {
-		"pokitdok/pokitdok-php": "dev-master"
+		"pokitdok/pokitdok-php": "*"
 	}
 }
 ```
