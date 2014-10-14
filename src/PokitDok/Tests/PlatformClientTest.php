@@ -187,10 +187,8 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         "trading_partner_id" => "MOCKPAYER"
     );
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = 'FfkQRvq2d9XW0NZJfl2G';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'eaanaSujk9ozLOmITilvmkupBLjGJuu324Ve7Nsv';
-//    const POKITDOK_PLATFORM_API_CLIENT_ID = 'JcR2P8SmoIaon4vpN9Q9';
-//    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X';
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'JcR2P8SmoIaon4vpN9Q9';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X';
     const POKITDOK_PLATFORM_API_SITE = 'http://me.pokitdok.com:5002';
 
     /**
