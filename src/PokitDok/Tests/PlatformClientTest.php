@@ -17,10 +17,6 @@ require_once 'vendor/autoload.php';
 //require_once 'src/PokitDok/Common/Oauth2ApplicationClient.php';
 //require_once 'src/PokitDok/Platform/PlatformClient.php';
 
-use VCR\VCR as VCR;
-VCR::configure()->setCassettePath(__DIR__ . "/vcr_cassettes");
-VCR::turnOn();
-
 use PokitDok\Platform\PlatformClient;
 
 
@@ -94,9 +90,107 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
             )
     );
 
+    private $claim_status_request = array(
+        "patient" => array(
+            "birth_date" => "1970-01-01",
+            "first_name" => "Jane",
+            "last_name" => "Doe",
+            "id" => "W000000000"
+        ),
+        "provider" => array(
+            "first_name" => "JEROME",
+            "last_name" => "AYA-AY",
+            "npi" => "1467560003"
+        ),
+        "service_date" => "2014-01-01",
+        "trading_partner_id" => "MOCKPAYER"
+    );
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = 'JcR2P8SmoIaon4vpN9Q9';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X';
+    private $referral_request = array(
+        "event" => array(
+                "category" => "specialty_care_review",
+                "certification_type" => "initial",
+                "delivery" => array(
+                    "quantity" => 1,
+                    "quantity_qualifier" => "visits"
+                ),
+            "diagnoses" => array(
+                array(
+                    "code" => "384.20",
+                    "date" => "2014-09-30"
+                )
+            ),
+            "place_of_service" => "office",
+            "provider" => array(
+                "first_name" => "JOHN",
+                "npi" => "1154387751",
+                "last_name" => "FOSTER",
+                "phone" => "8645822900"
+            ),
+            "type" => "consultation",
+        ),
+        "patient" => array(
+            "birth_date" => "1970-01-01",
+            "first_name" => "JANE",
+            "last_name" => "DOE",
+            "id" => "1234567890"
+        ),
+        "provider" => array(
+            "first_name" => "CHRISTINA",
+            "last_name" => "BERTOLAMI",
+            "npi" => "1619131232"
+        ),
+        "trading_partner_id" => "MOCKPAYER"
+    );
+
+    private $authorization_request = array(
+            "event" => array(
+                "category" => "health_services_review",
+                "certification_type" => "initial",
+                "delivery" => array(
+                    "quantity" => 1,
+                    "quantity_qualifier" => "visits"
+                )
+            ,
+            "diagnoses" => array(
+                array(
+                    "code" => "789.00",
+                    "date" => "2014-10-01"
+                )
+            ),
+            "place_of_service" => "office",
+            "provider" => array(
+                "organization_name" => "KELLY ULTRASOUND CENTER, LLC",
+                "npi" => "1760779011",
+                "phone" => "8642341234"
+            ),
+            "services" => array(
+                array(
+                    "cpt_code" => "76700",
+                    "measurement" => "unit",
+                    "quantity" => 1
+                )
+            ),
+            "type" => "diagnostic_imaging"
+        ),
+        "patient" => array(
+            "birth_date" => "1970-01-01",
+            "first_name" => "JANE",
+            "last_name" => "DOE",
+            "id" => "1234567890"
+        ),
+        "provider" => array(
+            "first_name" => "JEROME",
+            "npi" => "1467560003",
+            "last_name" => "AYA-AY"
+        ),
+        "trading_partner_id" => "MOCKPAYER"
+    );
+
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'FfkQRvq2d9XW0NZJfl2G';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'eaanaSujk9ozLOmITilvmkupBLjGJuu324Ve7Nsv';
+//    const POKITDOK_PLATFORM_API_CLIENT_ID = 'JcR2P8SmoIaon4vpN9Q9';
+//    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X';
     const POKITDOK_PLATFORM_API_SITE = 'http://me.pokitdok.com:5002';
 
     /**
@@ -138,9 +232,7 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
     protected function authenticate()
     {
-        VCR::insertCassette("authenticate.yml");
         $this->object->init();
-        VCR::eject();
     }
 
     /**
@@ -168,8 +260,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testClaims()
     {
-        VCR::insertCassette("claims.yml");
-
         $claim = $this->object->claims($this->claim_request)->body();
         $this->assertObjectHasAttribute('meta', $claim);
         $this->assertObjectHasAttribute('data', $claim);
@@ -178,8 +268,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('payer', $claim->data->parameters);
         $this->assertObjectHasAttribute('service_lines', $claim->data->parameters->claim);
         $this->assertObjectHasAttribute('plan_participation', $claim->data->parameters->claim);
-
-        VCR::eject();
     }
 
     /**
@@ -187,8 +275,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testUsage()
     {
-        VCR::insertCassette("usage.yml");
-
         $usage = $this->object->usage();
 
         $this->assertObjectHasAttribute('rate_limit_amount', $usage);
@@ -198,8 +284,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('rate_limit_cap', $usage);
         $this->assertObjectHasAttribute('credits_remaining', $usage);
         $this->assertObjectHasAttribute('credits_billed', $usage);
-
-        VCR::eject();
     }
 
     /**
@@ -207,14 +291,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testProviders()
     {
-        VCR::insertCassette("providers.yml");
-
         $providers = $this->object->providers(array('state' => 'CA'))->body();
 
         $this->assertObjectHasAttribute('meta', $providers);
         $this->assertObjectHasAttribute('data', $providers);
-
-        VCR::eject();
     }
 
     /**
@@ -222,8 +302,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testEligibility()
     {
-        VCR::insertCassette("eligibility.yml");
-
         $eligibility = $this->object->eligibility($this->eligibility_request)->body();
 
         $this->assertObjectHasAttribute('meta', $eligibility);
@@ -231,8 +309,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('provider', $eligibility->data);
         $this->assertObjectHasAttribute('subscriber', $eligibility->data);
         $this->assertObjectHasAttribute('payer', $eligibility->data);
-
-        VCR::eject();
     }
 
     /**
@@ -241,14 +317,11 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testClaimsStatus()
     {
-        VCR::insertCassette("claims_status.yml");
+        $claims_status = $this->object->claimsStatus($this->claim_status_request)->body();
 
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
-
-        VCR::eject();
+        $this->assertObjectHasAttribute('meta', $claims_status);
+        $this->assertObjectHasAttribute('data', $claims_status);
+        $this->assertObjectHasAttribute('patient', $claims_status->data);
     }
 
     /**
@@ -257,14 +330,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnrollment()
     {
-        VCR::insertCassette("enrollment.yml");
-
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
           'This test has not been implemented yet.'
         );
-
-        VCR::eject();
     }
 
     /**
@@ -272,15 +341,11 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testPayers()
     {
-        VCR::insertCassette("payers.yml");
-
-        $payers = $this->object->payers(array('state' => 'CA'))->body();
+        $payers = $this->object->payers()->body();
 
         $this->assertObjectHasAttribute('meta', $payers);
         $this->assertObjectHasAttribute('data', $payers);
         $this->assertObjectHasAttribute('supported_transactions', $payers->data[0]);
-
-        VCR::eject();
     }
 
     /**
@@ -288,11 +353,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testPricesInsurance()
     {
-        VCR::insertCassette("prices_insurance.yml");
+        $prices_insurance = $this->object->pricesInsurance(array('cpt_code' => "87799", 'zip_code' => "32218"))->body();
 
-        $this->object->pricesInsurance(array('cpt_code' => "87799", 'zip_code' => "32218"));
-
-        VCR::eject();
+        $this->assertObjectHasAttribute('meta', $prices_insurance);
+        $this->assertObjectHasAttribute('data', $prices_insurance);
     }
 
     /**
@@ -300,11 +364,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testPriceCash()
     {
-        VCR::insertCassette("prices_cash.yml");
+        $prices_cash = $this->object->pricesCash(array('cpt_code' => "87799", 'zip_code' => "32218"))->body();
 
-        $this->object->pricesCash(array('cpt_code' => "87799", 'zip_code' => "32218"));
-
-        VCR::eject();
+        $this->assertObjectHasAttribute('meta', $prices_cash);
+        $this->assertObjectHasAttribute('data', $prices_cash);
     }
 
     /**
@@ -312,15 +375,11 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testActivities()
     {
-        VCR::insertCassette("activities.yml");
-
         $activities = $this->object->activities()->body();
 
         $this->assertObjectHasAttribute('meta', $activities);
         $this->assertObjectHasAttribute('data', $activities);
         $this->assertObjectHasAttribute('units_of_work', $activities->data[0]);
-
-        VCR::eject();
     }
 
     /**
@@ -328,14 +387,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testTradingPartnersIndex()
     {
-        VCR::insertCassette("trading_partners_index.yml");
-
         $trading_partners = $this->object->trading_partners()->body();
 
         $this->assertObjectHasAttribute('meta', $trading_partners);
         $this->assertObjectHasAttribute('data', $trading_partners);
-
-        VCR::eject();
     }
 
     /**
@@ -343,14 +398,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testTradingPartnersGet()
     {
-        VCR::insertCassette("trading_partners_get.yml");
-
         $trading_partners = $this->object->trading_partners('MOCKPAYER')->body();
 
         $this->assertObjectHasAttribute('meta', $trading_partners);
         $this->assertObjectHasAttribute('data', $trading_partners);
-
-        VCR::eject();
     }
 
     /**
@@ -358,14 +409,10 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testPlansNoArguments()
     {
-        VCR::insertCassette("plans_no_arg.yml");
-
         $plans_no_arg = $this->object->plans()->body();
 
         $this->assertObjectHasAttribute('meta', $plans_no_arg);
         $this->assertObjectHasAttribute('data', $plans_no_arg);
-
-        VCR::eject();
     }
 
     /**
@@ -373,13 +420,37 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
      */
     public function testPlans()
     {
-        VCR::insertCassette("plans.yml");
-
         $plans = $this->object->plans(array('state' => "TX", 'plan_type' => "PPO"))->body();
 
         $this->assertObjectHasAttribute('meta', $plans);
         $this->assertObjectHasAttribute('data', $plans);
+    }
 
-        VCR::eject();
+    /**
+     * @covers PokitDok\Platform\PlatformClient::referrals
+     */
+    public function testReferrals()
+    {
+        $referrals = $this->object->referrals($this->referral_request)->body();
+
+        $this->assertObjectHasAttribute('meta', $referrals);
+        $this->assertObjectHasAttribute('data', $referrals);
+
+        $this->assertSame($referrals->data->event->review->certification_number, 'AUTH0001');
+        $this->assertSame($referrals->data->event->review->certification_action, 'certified_in_total');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::authorizations
+     */
+    public function testAuthorizations()
+    {
+        $authorizations = $this->object->authorizations($this->authorization_request)->body();
+
+        $this->assertObjectHasAttribute('meta', $authorizations);
+        $this->assertObjectHasAttribute('data', $authorizations);
+
+        $this->assertSame($authorizations->data->event->review->certification_number, 'AUTH0001');
+        $this->assertSame($authorizations->data->event->review->certification_action, 'certified_in_total');
     }
 }
