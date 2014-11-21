@@ -222,7 +222,7 @@ class Oauth2ApplicationClient {
         curl_close($this->_ch);
 
         if ($this->_status > 299) {
-            throw new \Exception(json_encode($this->_response->body()->data), $this->_status);
+            throw new \Exception(json_encode($this->_response->body()), $this->_status);
         }
 
         return $this->_status;
