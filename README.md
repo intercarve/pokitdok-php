@@ -11,8 +11,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 {
 	"require": {
 		"pokitdok/pokitdok-php": "*"
-	},
-	"minimum-stability": "dev"
+	}
 }
 ```
 
@@ -35,7 +34,7 @@ phpunit src/PokitDok/Tests/
 
 ```php
 # Initialize environment
-composer init --require="pokitdok/pokitdok-php:dev-master" --stability="dev"
+composer init --require="pokitdok/pokitdok-php:*"
 composer install
 
 # Initialize the client
