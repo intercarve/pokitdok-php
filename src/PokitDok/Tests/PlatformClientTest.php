@@ -187,9 +187,31 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         "trading_partner_id" => "MOCKPAYER"
     );
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = 'JcR2P8SmoIaon4vpN9Q9';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'JqPijdEL2NYFTJLEKquUzMgAks6JmWyszrbRPk4X';
-    const POKITDOK_PLATFORM_API_SITE = 'http://me.pokitdok.com:5002';
+    private $appointments_request = array(
+        "appointment_type" => "SS1",
+        "start_date" => "2015-01-14T08:00:00",
+        "end_date" => "2015-01-16T17:00:00",
+        "patient_uuid" => "8ae236ff-9ccc-44b0-8717-42653cd719d0"
+    );
+
+    private $book_appointment_request = array(
+        "patient" => array(
+            "_uuid" => "500ef469-2767-4901-b705-425e9b6f7f83",
+            "email" => "john@johndoe.com",
+            "phone" => "800-555-1212",
+            "birth_date" => "1970-01-01",
+            "first_name" => "John",
+            "last_name" => "Doe",
+            "member_id" => "M000001"
+        ),
+        "description" => "Welcome to M0d3rN Healthcare"
+    );
+
+    private $update_appointment_request = array("description" => "Welcome to M0d3rN Healthcare");
+
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'YIxdWJDwSo5uyeNfNniE';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'fLfn4vzp44rZkv9Uun7JuJnFzVImssTJwXX95I3U';
+    const POKITDOK_PLATFORM_API_SITE = 'http://127.0.0.1:5002';
 
     /**
      * @var PlatformClient
@@ -335,18 +357,6 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers PokitDok\Platform\PlatformClient::payers
-     */
-    public function testPayers()
-    {
-        $payers = $this->object->payers()->body();
-
-        $this->assertObjectHasAttribute('meta', $payers);
-        $this->assertObjectHasAttribute('data', $payers);
-        $this->assertObjectHasAttribute('supported_transactions', $payers->data[0]);
-    }
-
-    /**
      * @covers PokitDok\Platform\PlatformClient::pricesInsurance
      */
     public function testPricesInsurance()
@@ -450,5 +460,134 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($authorizations->data->event->review->certification_number, 'AUTH0001');
         $this->assertSame($authorizations->data->event->review->certification_action, 'certified_in_total');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::schedulers
+     */
+    public function testSchedulers()
+    {
+        $schedulers = $this->object->schedulers()->body();
+
+        $this->assertObjectHasAttribute('meta', $schedulers);
+        $this->assertObjectHasAttribute('data', $schedulers);
+
+        $this->assertSame($schedulers->data[0]->name, 'Greenway');
+        $this->assertSame($schedulers->data[1]->name, 'Athena');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::schedulers
+     */
+    public function testSchedulersUUID()
+    {
+        $schedulers = $this->object->schedulers('d8f38f08-8530-11e4-9a71-0800272e8da1')->body();
+
+        $this->assertObjectHasAttribute('meta', $schedulers);
+        $this->assertObjectHasAttribute('data', $schedulers);
+
+        $this->assertSame($schedulers->data[0]->scheduler_uuid, 'd8f38f08-8530-11e4-9a71-0800272e8da1');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::appointment_types
+     */
+    public function testAppointmentTypes()
+    {
+        $appointment_types = $this->object->appointment_types()->body();
+
+        $this->assertObjectHasAttribute('meta', $appointment_types);
+        $this->assertObjectHasAttribute('data', $appointment_types);
+
+        $this->assertSame($appointment_types->data[0]->appointment_type_uuid, 'ef987691-0a19-447f-814d-f8f3abbf4860');
+        $this->assertSame($appointment_types->data[1]->appointment_type_uuid, 'ef987692-0a19-447f-814d-f8f3abbf4860');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::appointment_types
+     */
+    public function testAppointmentTypesUUID()
+    {
+        $appointment_types = $this->object->appointment_types('ef987691-0a19-447f-814d-f8f3abbf4860')->body();
+
+        $this->assertObjectHasAttribute('meta', $appointment_types);
+        $this->assertObjectHasAttribute('data', $appointment_types);
+
+        $this->assertSame($appointment_types->data[0]->appointment_type_uuid, 'ef987691-0a19-447f-814d-f8f3abbf4860');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::appointment_types
+     */
+    public function testAppointments()
+    {
+        $appointments = $this->object->appointments($this->appointments_request)->body();
+
+        $this->assertObjectHasAttribute('meta', $appointments);
+        $this->assertObjectHasAttribute('data', $appointments);
+
+        $this->assertSame($appointments->data[0]->appointment_type, 'SS1');
+        $this->assertSame($appointments->data[0]->start_date, '2015-01-14T08:00:00.000000');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::appointment_types
+     */
+    public function testAppointmentsUUID()
+    {
+        $appointments = $this->object->appointments('ef987691-0a19-447f-814d-f8f3abbf4859')->body();
+
+        $this->assertObjectHasAttribute('meta', $appointments);
+        $this->assertObjectHasAttribute('data', $appointments);
+
+        $this->assertSame($appointments->data[0]->pd_appointment_uuid, 'ef987691-0a19-447f-814d-f8f3abbf4859');
+        $this->assertSame($appointments->data[0]->appointment_type, 'OV1');
+        $this->assertSame($appointments->data[0]->patient->email, 'john@johndoe.com');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::book_appointment
+     */
+    public function testBookAppointment()
+    {
+        $appointment = $this->object->book_appointment(
+            'ef987691-0a19-447f-814d-f8f3abbf4859',
+            $this->book_appointment_request
+        )->body();
+
+        $this->assertObjectHasAttribute('meta', $appointment);
+        $this->assertObjectHasAttribute('data', $appointment);
+
+        $this->assertSame($appointment->data->appointment_type, 'OV1');
+        $this->assertSame($appointment->data->booked, true);
+        $this->assertSame($appointment->data->patient->email, 'john@johndoe.com');
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::update_appointment
+     */
+    public function testUpdateAppointment()
+    {
+        $appointment = $this->object->update_appointment(
+            'ef987691-0a19-447f-814d-f8f3abbf4859',
+            $this->update_appointment_request
+        )->body();
+
+        $this->assertObjectHasAttribute('meta', $appointment);
+        $this->assertObjectHasAttribute('data', $appointment);
+
+        $this->assertSame($appointment->data->appointment_type, 'OV1');
+        $this->assertSame($appointment->data->booked, false);
+        $this->assertSame($appointment->data->description, "Welcome to M0d3rN Healthcare");
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::cancel_appointment
+     */
+    public function testCancelAppointment()
+    {
+        $this->object->cancel_appointment('ef987691-0a19-447f-814d-f8f3abbf4859');
+
+        $this->assertSame($this->object->getStatus(), 204);
     }
 }

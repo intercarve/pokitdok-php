@@ -31,6 +31,11 @@ class Oauth2ApplicationClient {
     private $_api_token_url = '';
     private $_ch = null;
 
+    private $_redirect_uri = null;
+    private $_token_refresh_callback = null;
+    private $_scope = null;
+    private $_code = null;
+
     /**
      * @var \PokitDok\Common\HttpResponse
      */
@@ -49,13 +54,21 @@ class Oauth2ApplicationClient {
      *          "expires_in": 3600
      *      }
      * @param string $cert_file     Fully qualified path to trusted CA certificates file
+     * @param string $redirect_uri  URL to redirect to for the Platform Application, see Application settings
+     * @param callable $token_refresh_callback Callback function invoked when the token is refreshed
+     * @param Array $scope          Array of strings representing the requested scopes
+     * @param string $code          The authorization code received by the scope grant of the Platform Application
      */
     public function __construct(
         $id,
         $secret,
         $request_timeout = self::DEFAULT_TIMEOUT,
         $access_token_json = null,
-        $cert_file = '')
+        $cert_file = '',
+        $redirect_uri = null,
+        callable $token_refresh_callback = null,
+        array $scope = null,
+        $code = null)
     {
         $this->_client_id = $id;
         $this->_client_secret = $secret;
@@ -64,8 +77,19 @@ class Oauth2ApplicationClient {
         if (isset($access_token_json)) {
             $this->setAccessToken($access_token_json);
         }
-
         $this->_cert_file = $cert_file;
+        if (isset($redirect_uri)) {
+            $this->_redirect_uri = $redirect_uri;
+        }
+        if (isset($token_refresh_callback)) {
+            $this->_token_refresh_callback = $token_refresh_callback;
+        }
+        if (isset($scope)) {
+            $this->_scope = $scope;
+        }
+        if (isset($code)) {
+            $this->_code = $code;
+        }
     }
 
     /**
@@ -95,6 +119,18 @@ class Oauth2ApplicationClient {
     }
 
     /**
+     * @return null|string Access token JSON document
+     */
+    private function retrieve_access_token()
+    {
+        if (!isset($this->_code)) {
+            return $this->retrieve_client_credentials_access_token();
+        } else {
+            return $this->retrieve_auth_code_access_token($this->_code);
+        }
+    }
+
+    /**
      * @return string JSON string of access token response
      *  {
      *      "access_token": "s8KYRJGTO0rWMy0zz1CCSCwsSesDyDlbNdZoRqVR",
@@ -104,7 +140,7 @@ class Oauth2ApplicationClient {
      *  }
      * @throws \Exception On error configure Curl access token request
      */
-    private function retrieve_access_token()
+    private function retrieve_client_credentials_access_token()
     {
         if (!$this->isTokenExpired()) {
             return $this->_access_token_result;
@@ -118,6 +154,52 @@ class Oauth2ApplicationClient {
             CURLOPT_POSTFIELDS,
             array(
                 "grant_type"=>"client_credentials",
+                "client_id"=>$this->_client_id,
+                "client_secret"=>$this->_client_secret
+            )
+        );
+        if ($this->_ch === false) {
+            throw new \Exception(curl_error($this->_ch), curl_errno($this->_ch));
+        }
+
+        $result = curl_exec($this->_ch);
+        if ($result === false) {
+            throw new \Exception(curl_error($this->_ch), curl_errno($this->_ch));
+        }
+        $this->setAccessToken($result);
+        curl_close($this->_ch);
+
+        return $this->_access_token_result;
+    }
+
+    /**
+     * @param $code The authorization code received by the scope grant
+     * @return string JSON string of access token response
+     *  {
+     *      "access_token": "s8KYRJGTO0rWMy0zz1CCSCwsSesDyDlbNdZoRqVR",
+     *      "token_type": "bearer",
+     *      "expires": 1393350569,
+     *      "expires_in": 3600
+     *  }
+     * @throws \Exception On error configure Curl access token request
+     */
+    private function retrieve_auth_code_access_token($code)
+    {
+        if (!$this->isTokenExpired()) {
+            return $this->_access_token_result;
+        }
+
+        $this->get_handle();
+        curl_setopt($this->_ch, CURLOPT_URL, $this->_api_token_url);
+        curl_setopt($this->_ch, CURLOPT_POST, true);
+        curl_setopt(
+            $this->_ch,
+            CURLOPT_POSTFIELDS,
+            array(
+                "grant_type"=>"authorization_code",
+                "code"=>$code,
+                "redirect_uri"=>$this->_redirect_uri,
+                "scope"=>$this->_scope,
                 "client_id"=>$this->_client_id,
                 "client_secret"=>$this->_client_secret
             )
@@ -160,6 +242,10 @@ class Oauth2ApplicationClient {
             $this->_access_token_expires = $this->_access_token_result->expires;
         }
 
+        if (isset($this->_token_refresh_callback)) {
+            call_user_func($this->_token_refresh_callback, $this->_access_token);
+        }
+
         return $this->_access_token_result;
     }
 
@@ -190,7 +276,7 @@ class Oauth2ApplicationClient {
 
         $headers = array(sprintf('Authorization: Bearer %s', $this->_access_token));
 
-        if ($request_type === "GET") {
+        if ($request_type === 'GET' || $request_type === 'DELETE') {
             curl_setopt(
                 $this->_ch,
                 CURLOPT_URL,
