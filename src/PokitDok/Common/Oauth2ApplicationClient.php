@@ -27,8 +27,10 @@ class Oauth2ApplicationClient {
     private $_access_token = '';
     private $_access_token_expires = null;
     private $_access_token_result = null;
+    private $_refresh_token = '';
     private $_api_base_url = '';
     private $_api_token_url = '';
+
     private $_ch = null;
 
     private $_redirect_uri = null;
@@ -51,12 +53,13 @@ class Oauth2ApplicationClient {
      *          "access_token": "tOUwQvtoj3vYhbM1AOSDBjebnXjevMQeZjcYBYPL",     // required
      *          "token_type": "bearer",
      *          "expires": 1398735988,                                          // required
-     *          "expires_in": 3600
+     *          "expires_in": 3600,
+     *          "refresh_token": "aOUwQvtoj3vYhbM1AOSDBjebnXjevMQeZjcYBYPL"
      *      }
      * @param string $cert_file     Fully qualified path to trusted CA certificates file
      * @param string $redirect_uri  URL to redirect to for the Platform Application, see Application settings
      * @param callable $token_refresh_callback Callback function invoked when the token is refreshed
-     * @param Array $scope          Array of strings representing the requested scopes
+     * @param array $scope          array of strings representing the requested scopes
      * @param string $code          The authorization code received by the scope grant of the Platform Application
      */
     public function __construct(
@@ -67,7 +70,7 @@ class Oauth2ApplicationClient {
         $cert_file = '',
         $redirect_uri = null,
         callable $token_refresh_callback = null,
-        array $scope = null,
+        $scope = null,
         $code = null)
     {
         $this->_client_id = $id;
@@ -75,7 +78,7 @@ class Oauth2ApplicationClient {
         $this->_request_timeout = $request_timeout;
 
         if (isset($access_token_json)) {
-            $this->setAccessToken($access_token_json);
+            $this->setAccessToken($access_token_json, false);
         }
         $this->_cert_file = $cert_file;
         if (isset($redirect_uri)) {
@@ -123,7 +126,9 @@ class Oauth2ApplicationClient {
      */
     private function retrieve_access_token()
     {
-        if (!isset($this->_code)) {
+        if (isset($this->_refresh_token) && strlen($this->_refresh_token) > 0) {
+            return $this->refresh_access_token();
+        } elseif (!isset($this->_code)) {
             return $this->retrieve_client_credentials_access_token();
         } else {
             return $this->retrieve_auth_code_access_token($this->_code);
@@ -136,7 +141,8 @@ class Oauth2ApplicationClient {
      *      "access_token": "s8KYRJGTO0rWMy0zz1CCSCwsSesDyDlbNdZoRqVR",
      *      "token_type": "bearer",
      *      "expires": 1393350569,
-     *      "expires_in": 3600
+     *      "expires_in": 3600,
+     *      "refresh_token": "aOUwQvtoj3vYhbM1AOSDBjebnXjevMQeZjcYBYPL"
      *  }
      * @throws \Exception On error configure Curl access token request
      */
@@ -173,13 +179,14 @@ class Oauth2ApplicationClient {
     }
 
     /**
-     * @param $code The authorization code received by the scope grant
+     * @param string $code The authorization code received by the scope grant
      * @return string JSON string of access token response
      *  {
      *      "access_token": "s8KYRJGTO0rWMy0zz1CCSCwsSesDyDlbNdZoRqVR",
      *      "token_type": "bearer",
      *      "expires": 1393350569,
-     *      "expires_in": 3600
+     *      "expires_in": 3600,
+     *      "refresh_token": "aOUwQvtoj3vYhbM1AOSDBjebnXjevMQeZjcYBYPL"
      *  }
      * @throws \Exception On error configure Curl access token request
      */
@@ -197,11 +204,56 @@ class Oauth2ApplicationClient {
             CURLOPT_POSTFIELDS,
             array(
                 "grant_type"=>"authorization_code",
-                "code"=>$code,
-                "redirect_uri"=>$this->_redirect_uri,
-                "scope"=>$this->_scope,
                 "client_id"=>$this->_client_id,
-                "client_secret"=>$this->_client_secret
+                "client_secret"=>$this->_client_secret,
+                "redirect_uri"=>$this->_redirect_uri,
+                "code"=>$code,
+                "scope"=>$this->_scope,
+            )
+        );
+        if ($this->_ch === false) {
+            throw new \Exception(curl_error($this->_ch), curl_errno($this->_ch));
+        }
+
+        $result = curl_exec($this->_ch);
+        if ($result === false) {
+            throw new \Exception(curl_error($this->_ch), curl_errno($this->_ch));
+        }
+        $this->setAccessToken($result);
+        curl_close($this->_ch);
+
+        return $this->_access_token_result;
+    }
+
+    /**
+     * @return string JSON string of access token response
+     *  {
+     *      "access_token": "s8KYRJGTO0rWMy0zz1CCSCwsSesDyDlbNdZoRqVR",
+     *      "token_type": "bearer",
+     *      "expires": 1393350569,
+     *      "expires_in": 3600,
+     *      "refresh_token": "aOUwQvtoj3vYhbM1AOSDBjebnXjevMQeZjcYBYPL"
+     *  }
+     * @throws \Exception On error configure Curl access token request
+     */
+    private function refresh_access_token()
+    {
+        if (!$this->isTokenExpired()) {
+            return $this->_access_token_result;
+        }
+
+        $this->get_handle();
+        curl_setopt($this->_ch, CURLOPT_URL, $this->_api_token_url);
+        curl_setopt($this->_ch, CURLOPT_POST, true);
+        curl_setopt(
+            $this->_ch,
+            CURLOPT_POSTFIELDS,
+            array(
+                "grant_type" => "refresh_token",
+                "client_id" => $this->_client_id,
+                "client_secret" => $this->_client_secret,
+                "refresh_token" => $this->_refresh_token,
+                "scope" => $this->_scope
             )
         );
         if ($this->_ch === false) {
@@ -223,27 +275,48 @@ class Oauth2ApplicationClient {
      *  {
      *      "access_token": "s8KYRJGTO0rWMy0zz1CCSCwsSesDyDlbNdZoRqVR",
      *      "token_type": "bearer",
-     *      "expires": 1393350569,
-     *      "expires_in": 3600
+     *      "expires": 1393350569, // optional
+     *      "expires_in": 3600,
+     *      "refresh_token": "aOUwQvtoj3vYhbM1AOSDBjebnXjevMQeZjcYBYPL" // optional
      *  }
+     * @param bool $call_refresh_callback When true invoke the token refresh callback if set
+     * @param bool $expire_token When true the access token expire time will be set to now
      * @return string JSON string of access token response
      * @throws \Exception On error returned from access token request
      */
-    private function setAccessToken($access_token_json)
+    private function setAccessToken($access_token_json, $call_refresh_callback=true, $expire_token=false)
     {
+        $this->_access_token_result = json_decode($access_token_json);
+        $token_elements = get_object_vars($this->_access_token_result);
+        if (!array_key_exists("access_token", $token_elements) ||
+            !array_key_exists("token_type", $token_elements) ||
+            !array_key_exists("expires_in", $token_elements)) {
+            throw new \Exception("Invalid access token.");
+        }
+
         $this->_access_token = '';
         $this->_access_token_expires = null;
-        $this->_access_token_result = json_decode($access_token_json);
+        $this->_refresh_token = '';
 
         if (isset($this->_access_token_result->error)) {
             throw new \Exception($this->_access_token_result->error);
         } else {
             $this->_access_token = $this->_access_token_result->access_token;
-            $this->_access_token_expires = $this->_access_token_result->expires;
+            if ($expire_token) {
+                $this->_access_token_expires = time() - 1;
+            } elseif (array_key_exists("expires", $token_elements)) {
+                $this->_access_token_expires = $this->_access_token_result->expires;
+            } else {
+                $this->_access_token_expires = time() + $this->_access_token_result->expires_in - 60;
+            }
+            $this->_access_token_result->expires = $this->_access_token_expires;
+            if (isset($this->_access_token_result->refresh_token)) {
+                $this->_refresh_token = $this->_access_token_result->refresh_token;
+            }
         }
 
-        if (isset($this->_token_refresh_callback)) {
-            call_user_func($this->_token_refresh_callback, $this->_access_token);
+        if ($call_refresh_callback && isset($this->_token_refresh_callback)) {
+            call_user_func($this->_token_refresh_callback, json_encode($this->_access_token_result));
         }
 
         return $this->_access_token_result;

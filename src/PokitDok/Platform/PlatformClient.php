@@ -37,6 +37,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_SITE = 'https://platform.pokitdok.com';
 
     const POKITDOK_PLATFORM_API_TOKEN_URL = '/oauth2/token';
+    const POKITDOK_PLATFORM_API_TOKEN_REFRESH_URL = '/oauth2/refresh';
     const POKITDOK_PLATFORM_API_VERSION_PATH = '/api/v4';
 
     const POKITDOK_PLATFORM_API_ENDPOINT_ELIGIBILITY = '/eligibility/';
@@ -83,20 +84,33 @@ class PlatformClient extends Oauth2ApplicationClient
      * @param int $request_timeout Timeout for all requests (default is 90(s))
      * @param string $access_token_json JSON string of access token response for saved authentication token
      * @param string $cert_file Full path to certificate file containing CA certs
+     * @param string $redirect_uri  URL to redirect to for the Platform Application, see Application settings
+     * @param callable $token_refresh_callback Callback function invoked when the token is refreshed
+     * @param array $scope array of strings representing the requested scopes
+     * @param string $code The authorization code received by the scope grant of the Platform Application
      */
     public function __construct(
         $id,
         $secret,
         $request_timeout = self::DEFAULT_TIMEOUT,
         $access_token_json = null,
-        $cert_file = '')
+        $cert_file = '',
+        $redirect_uri = null,
+        callable $token_refresh_callback = null,
+        $scope = null,
+        $code = null)
     {
         parent::__construct(
             $id,
             $secret,
             $request_timeout,
             $access_token_json,
-            $cert_file);
+            $cert_file,
+            $redirect_uri,
+            $token_refresh_callback,
+            $scope,
+            $code
+        );
 
         $this->setApiBaseUrl(self::POKITDOK_PLATFORM_API_SITE . $this->_version_path);
         $this->setApiTokenUrl(self::POKITDOK_PLATFORM_API_SITE . self::POKITDOK_PLATFORM_API_TOKEN_URL);

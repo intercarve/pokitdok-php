@@ -209,8 +209,8 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
     private $update_appointment_request = array("description" => "Welcome to M0d3rN Healthcare");
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = 'YIxdWJDwSo5uyeNfNniE';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'fLfn4vzp44rZkv9Uun7JuJnFzVImssTJwXX95I3U';
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'LI7WdtLCs3PyLlqCiccr';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'E0kM0nH7ZZPI3iwfSHvePvX3QR94c3FDakpyhoIZ';
     const POKITDOK_PLATFORM_API_SITE = 'http://127.0.0.1:5002';
 
     /**
