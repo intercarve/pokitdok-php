@@ -59,6 +59,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENT_TYPES = '/schedule/appointmenttypes/';
     const POKITDOK_PLATFORM_API_ENDPOINT_SLOTS = '/schedule/slots/';
     const POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS = '/schedule/appointments/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_MPC = '/mpc/';
 
 
     private $_usage = null;
@@ -560,7 +561,7 @@ class PlatformClient extends Oauth2ApplicationClient
     {
         $this->request(
             'POST',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS,
+            self::POKITDOK_PLATFORM_API_ENDPOINT_SLOTS,
             $create_slot_request,
             "application/json"
         );
@@ -645,5 +646,29 @@ class PlatformClient extends Oauth2ApplicationClient
             self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS,
             $cancel_appointment_uuid
         );
+    }
+
+    /**
+     * The Medical Procedure Code resource provides access to clinical and consumer friendly information related to
+     * medical procedures.
+     *
+     * @param mixed $medical_procedure_code Optional, String of a specific procedure code OR an Array of query params.
+     *      Query Parameters:
+     *          name, Search medical procedure information by consumer friendly name
+     *          description, A partial or full description to be used to locate medical procedure information
+     * @return \PokitDok\Common\HttpResponse Response object with medical procedure code data,
+     *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception
+     */
+    public function medical_procedure_code($medical_procedure_code = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_MPC,
+            $medical_procedure_code,
+            "application/json"
+        );
+
+        return $this->applyResponse();
     }
 }

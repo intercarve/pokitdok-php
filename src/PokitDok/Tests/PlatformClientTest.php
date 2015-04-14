@@ -209,8 +209,8 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
     private $update_appointment_request = array("description" => "Welcome to M0d3rN Healthcare");
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = 'LI7WdtLCs3PyLlqCiccr';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'E0kM0nH7ZZPI3iwfSHvePvX3QR94c3FDakpyhoIZ';
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'dB6bOvgCNOAhKt5lWir1';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'aLSjaEkr9H2f74Zk2lTB6yPlaL5j1sH53wv0gzp0';
     const POKITDOK_PLATFORM_API_SITE = 'http://127.0.0.1:5002';
 
     /**
@@ -589,5 +589,16 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         $this->object->cancel_appointment('ef987691-0a19-447f-814d-f8f3abbf4859');
 
         $this->assertSame($this->object->getStatus(), 204);
+    }
+
+    /**
+     * @covers PokitDok\Platform\PlatformClient::medical_procedure_code
+     */
+    public function testMedicalProcedureCode()
+    {
+        $medical_procedure_codes = $this->object->medical_procedure_code()->body();
+
+        $this->assertObjectHasAttribute('meta', $medical_procedure_codes);
+        $this->assertObjectHasAttribute('data', $medical_procedure_codes);
     }
 }
