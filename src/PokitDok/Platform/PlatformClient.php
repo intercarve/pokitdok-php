@@ -37,6 +37,7 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_SITE = 'https://platform.pokitdok.com';
 
     const POKITDOK_PLATFORM_API_TOKEN_URL = '/oauth2/token';
+    const POKITDOK_PLATFORM_API_TOKEN_REFRESH_URL = '/oauth2/refresh';
     const POKITDOK_PLATFORM_API_VERSION_PATH = '/api/v4';
 
     const POKITDOK_PLATFORM_API_ENDPOINT_ELIGIBILITY = '/eligibility/';
@@ -54,6 +55,10 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_PLANS = '/plans/';
     const POKITDOK_PLATFORM_API_ENDPOINT_REFERRALS = '/referrals/';
     const POKITDOK_PLATFORM_API_ENDPOINT_AUTHORIZATIONS = '/authorizations/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_SCHEDULERS = '/schedule/schedulers/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENT_TYPES = '/schedule/appointmenttypes/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_SLOTS = '/schedule/slots/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS = '/schedule/appointments/';
 
 
     private $_usage = null;
@@ -79,20 +84,33 @@ class PlatformClient extends Oauth2ApplicationClient
      * @param int $request_timeout Timeout for all requests (default is 90(s))
      * @param string $access_token_json JSON string of access token response for saved authentication token
      * @param string $cert_file Full path to certificate file containing CA certs
+     * @param string $redirect_uri  URL to redirect to for the Platform Application, see Application settings
+     * @param callable $token_refresh_callback Callback function invoked when the token is refreshed
+     * @param array $scope array of strings representing the requested scopes
+     * @param string $code The authorization code received by the scope grant of the Platform Application
      */
     public function __construct(
         $id,
         $secret,
         $request_timeout = self::DEFAULT_TIMEOUT,
         $access_token_json = null,
-        $cert_file = '')
+        $cert_file = '',
+        $redirect_uri = null,
+        callable $token_refresh_callback = null,
+        $scope = null,
+        $code = null)
     {
         parent::__construct(
             $id,
             $secret,
             $request_timeout,
             $access_token_json,
-            $cert_file);
+            $cert_file,
+            $redirect_uri,
+            $token_refresh_callback,
+            $scope,
+            $code
+        );
 
         $this->setApiBaseUrl(self::POKITDOK_PLATFORM_API_SITE . $this->_version_path);
         $this->setApiTokenUrl(self::POKITDOK_PLATFORM_API_SITE . self::POKITDOK_PLATFORM_API_TOKEN_URL);
@@ -270,24 +288,6 @@ class PlatformClient extends Oauth2ApplicationClient
             self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT,
             $enrollment_request,
             "application/json"
-        );
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * Use the /payers/ API to determine available payer_id values for use with other endpoints
-     * The Payers endpoint will be deprecated in v5. Use Trading Partners instead.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#payers
-     *
-     * @return \PokitDok\Common\HttpResponse Response object with payers data
-     * @throws \Exception On HTTP errors (status > 299)
-     */
-    public function payers()
-    {
-        $this->request(
-            'GET',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_PAYERS
         );
 
         return $this->applyResponse();
@@ -499,5 +499,151 @@ class PlatformClient extends Oauth2ApplicationClient
         );
 
         return $this->applyResponse();
+    }
+
+    /**
+     * Get a list of (or specific by UUID) the supported Scheduling Systems and their details.
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param string $schedulers_request string The UUID of the Scheduler (scheduler_uuid), empty gets the entire list
+     * @return \PokitDok\Common\HttpResponse Response object with scheduler details,
+     *      see API documentation on https://platform.pokitdok.com/
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function schedulers($schedulers_request = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_SCHEDULERS,
+            $schedulers_request
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Get a list of (or specific by UUID) the supported Appointment Types and their details.
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param string $appointment_types_request The UUID of the Appointment Type (appointment_type_uuid), empty gets
+     *          the entire list
+     * @return \PokitDok\Common\HttpResponse Response object with appointment type details
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function appointment_types($appointment_types_request = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENT_TYPES,
+            $appointment_types_request
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Create an open slot given details. Only valid use is for PokitDok Scheduler only providers.
+     * {
+     *      "pd_provider_uuid": "fd0d75d2-6285-4ecc-aca0-017f0f313bd6",
+     *      "location": [32.7844314, -79.9994895], // geo location
+     *      "appointment_type": "ATYP1", // appointment type name
+     *      "start_date": "2014-03-17T08:00:00", // formatted as ISO8601
+     *      "end_date": "2014-03-17T09:00:00" // formatted as ISO8601
+     * }
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param array $create_slot_request Array of open slot details
+     * @return \PokitDok\Common\HttpResponse Response object of the booked Appointment
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function create_slot(array $create_slot_request)
+    {
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS,
+            $create_slot_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Query for open appointment slots (using pd_provider_uuid and location) or booked appointments
+     *      (using patient_uuid) given query parameters, or get a single appointment given a UUID (pd_appointment_uuid)
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param array|string $appointments_request Array of query parameters or string of the UUID (pd_appointment_uuid)
+     * @return \PokitDok\Common\HttpResponse Response object with Open Slot or Appointment details
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function appointments($appointments_request = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS,
+            $appointments_request
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Book appointment for an open slot. Put data contains patient attributes and description.
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param string $book_appointment_uuid The Appointment UUID (pd_appointment_uuid) to book
+     * @param array $book_appointment_request Array of the patient attributes and description
+     * @return \PokitDok\Common\HttpResponse Response object of the booked Appointment
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function book_appointment($book_appointment_uuid, array $book_appointment_request)
+    {
+        $this->request(
+            'PUT',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS. $book_appointment_uuid,
+            $book_appointment_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Update appointment description. Put data contains description.
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param string $update_appointment_uuid The Appointment UUID (pd_appointment_uuid) to update
+     * @param array $update_appointment_request Array of the description
+     * @return \PokitDok\Common\HttpResponse Response object of the booked Appointment
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function update_appointment($update_appointment_uuid, array $update_appointment_request)
+    {
+        $this->request(
+            'PUT',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS. $update_appointment_uuid,
+            $update_appointment_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Cancel an Appointment.
+     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     *
+     * @param string $cancel_appointment_uuid The Appointment UUID (pd_appointment_uuid) to cancel
+     * @return \PokitDok\Common\HttpResponse Response object of the booked Appointment
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function cancel_appointment($cancel_appointment_uuid)
+    {
+        $this->request(
+            'DELETE',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS,
+            $cancel_appointment_uuid
+        );
     }
 }
