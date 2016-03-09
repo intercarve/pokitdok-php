@@ -61,88 +61,83 @@ $client->providers(array('organization_name' => "Qliance"));
 $client->providers(array('zipcode' => "29307", 'radius' => "10mi"));
 $client->providers(array('zipcode' => "29307", 'radius' => "10mi", 'specialty' => "RHEUMATOLOGY"));
 
-# Submit a v4 eligibility request
+# Submit an eligibility request
 $client->eligibility(array(
-   'member' => array(
-       'id' => "W000000000",
-       'birth_date' => "1970-01-01",
-       'first_name' => "Jane",
-       'last_name' => "Doe"
-   ),
-   'provider' => array(
-       'npi' => "1467560003",
-       'last_name' => "AYA-AY",
-       'first_name' => "JEROME"
-   ),
-   'service_types' => array("health_benefit_plan_coverage"),
-   'trading_partner_id' => "MOCKPAYER"
+    'member' => array(
+        'id' => "W000000000",
+        'birth_date' => "1970-01-01",
+        'first_name' => "Jane",
+        'last_name' => "Doe"
+    ),
+    'provider' => array(
+        'npi' => "1467560003",
+        'last_name' => "AYA-AY",
+        'first_name' => "JEROME"
+    ),
+    'service_types' => array("health_benefit_plan_coverage"),
+    'trading_partner_id' => "MOCKPAYER"
 ));
 
-# Submit a v4 claims request
+# Submit a claims request
 $client->claims(array(
     'transaction_code' => "chargeable",
     'trading_partner_id' => "MOCKPAYER",
     'billing_provider' => array(
-	'taxonomy_code' => "207Q00000X",
-	'first_name' => "Jerome",
-	'last_name' => "Aya-Ay",
-	'npi' => "1467560003",
-	'address' => array(
-	    'address_lines' => array(
-		"8311 WARREN H ABERNATHY HWY"
-	    ),
-	    'city' => "SPARTANBURG",
-	    'state' => "SC",
-	    'zipcode' => "29301"
-	),
-	'tax_id' => "123456789"
+        'taxonomy_code' => "207Q00000X",
+        'first_name' => "Jerome",
+        'last_name' => "Aya-Ay",
+        'npi' => "1467560003",
+        'address' => array(
+            'address_lines' => array(
+                "8311 WARREN H ABERNATHY HWY"
+            ),
+            'city' => "SPARTANBURG",
+            'state' => "SC",
+            'zipcode' => "29301"
+        ),
+        'tax_id' => "123456789"
     ),
     'subscriber' => array(
-	'first_name' => "Jane",
-	'last_name' => "Doe",
-	'member_id' => "W000000000",
-	'address' => array(
-	    'address_lines' => array("123 N MAIN ST"),
-	    'city' => "SPARTANBURG",
-	    'state' => "SC",
-	    'zipcode' => "29301"
-	),
-	'birth_date' => "1970-01-01",
-	'gender' => "female"
+        'first_name' => "Jane",
+        'last_name' => "Doe",
+        'member_id' => "W000000000",
+        'address' => array(
+            'address_lines' => array("123 N MAIN ST"),
+            'city' => "SPARTANBURG",
+            'state' => "SC",
+            'zipcode' => "29301"
+        ),
+        'birth_date' => "1970-01-01",
+        'gender' => "female"
     ),
     'claim' => array(
-	'total_charge_amount' => 60.0,
-	'service_lines' => array(
-	    array(
-		'procedure_code' => "99213",
-		'charge_amount' => 60.0,
-		'unit_count' => 1.0,
-		'diagnosis_codes' => array(
-		    "487.1"
-		),
-		'service_date' => "2014-06-01"
-	    )
-	)
-    ),
-    "payer" =>
-	array(
-	    'organization_name' => "Acme Ins Co",
-	    'plan_id' => "1234567890"
-	)
+        'total_charge_amount' => 60.0,
+        'service_lines' => array(
+            array(
+                'procedure_code' => "99213",
+                'charge_amount' => 60.0,
+                'unit_count' => 1.0,
+                'diagnosis_codes' => array(
+                    "487.1"
+                ),
+                'service_date' => "2014-06-01"
+            )
+        )
+    )
 ));
 
 # Check the status of a claim
 $claims_status = $client->claimsStatus(array(
     "patient" => array(
-        "birth_date" => "1970-01-01",
-        "first_name" => "JANE",
-        "last_name" => "DOE",
-        "id" => "1234567890"
+       "birth_date" => "1970-01-01",
+       "first_name" => "Jane",
+       "last_name" => "Doe",
+       "id" => "W000000000"
     ),
     "provider" => array(
-        "first_name" => "Jerome",
-        "last_name" => "Aya-Ay",
-        "npi" => "1467560003",
+       "first_name" => "JEROME",
+       "last_name" => "AYA-AY",
+       "npi" => "1467560003"
     ),
     "service_date" => "2014-01-01",
     "trading_partner_id" => "MOCKPAYER"
@@ -162,14 +157,36 @@ $client->activities(array('parent_id' => "537cd4b240b35755f5128d5c"));
 
 # retrieve an index of activities
 $client->activities();
+
+
+# Perform a general PokitDok Platform API request (use for new APIs not yet incorporated into the client)
+$client->request(
+    'POST',
+    '/eligibility/',
+    array(
+        'member' => array(
+            'id' => "W000000000",
+            'birth_date' => "1970-01-01",
+            'first_name' => "Jane",
+            'last_name' => "Doe"
+        ),
+        'provider' => array(
+            'npi' => "1467560003",
+            'last_name' => "AYA-AY",
+            'first_name' => "JEROME"
+        ),
+        'service_types' => array("health_benefit_plan_coverage"),
+        'trading_partner_id' => "MOCKPAYER"
+    ),
+    "application/json"
+);
+
 ```
 
 ## Tested PHP Versions
 This library aims to support and is tested against these PHP versions:
-
 * php >= 5.3
 
-You may have luck with other interpreters - let us know how it goes.
 
 ## License
 Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.
