@@ -17,6 +17,8 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 
 ## Tests
 ```
+Obtain a Test account key and secret from https://platform.pokitdok.com and update src/PokitDok/Tests/PlatformClientTest.php with your POKITDOK_PLATFORM_API_CLIENT_ID and POKITDOK_PLATFORM_API_CLIENT_SECRET.
+
 phpunit src/PokitDok/Tests/
 ```
 
