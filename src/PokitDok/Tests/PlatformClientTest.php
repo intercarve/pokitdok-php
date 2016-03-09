@@ -351,7 +351,7 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
 
     const POKITDOK_PLATFORM_API_CLIENT_ID = '4pET1V8nqYwkR9ge528U';
     const POKITDOK_PLATFORM_API_CLIENT_SECRET = 'l3dp3yJtvKgCbeQEH4NLar3xXQpOuq4wUAvZZgii';
-    const POKITDOK_PLATFORM_API_SITE = 'http://127.0.0.1:5002';
+    const POKITDOK_PLATFORM_API_SITE = 'http://platform.pokitdok.com';
 
     /**
      * @var PlatformClient
