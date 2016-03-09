@@ -1,13 +1,15 @@
 <?php
-// Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
-// http://www.pokitdok.com
-//
-// Please see the LICENSE.txt file for more information.
-// All other rights reserved.
-//
-//	PokitDok Platform Client for PHP
-//		Consume the REST based PokitDok platform API
-//		https://platform.pokitdok.com/login#/documentation
+/**
+ * Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
+ * http://www.pokitdok.com
+ *
+ * Please see the LICENSE.txt file for more information.
+ * All other rights reserved.
+ *
+ *	PokitDok Platform Client for PHP
+ *		Consume the REST based PokitDok platform API
+ *		https://platform.pokitdok.com/
+ */
 
 
 namespace PokitDok\Platform;
@@ -17,7 +19,7 @@ use PokitDok\Common\Oauth2ApplicationClient;
 /**
  * Class PlatformClient The PokitDok  API allows you to perform X12 transactions,
  *  find healthcare providers and get information on health care procedure pricing.
- * See docs here: https://platform.pokitdok.com/documentation/v4#/
+ * See docs here: https://platform.pokitdok.com/
  *
  * Common Query parameters:
  * async	Whether the API call is asynchronous. For Resources that offer both synchronous and asynchronous operation,
@@ -46,7 +48,6 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS_STATUS = '/claims/status';
     const POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT = '/enrollment/';
     const POKITDOK_PLATFORM_API_ENDPOINT_DEDUCTIBLE = '/deductible/';
-    const POKITDOK_PLATFORM_API_ENDPOINT_PAYERS = '/payers/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_INSURANCE = '/prices/insurance';
     const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_CASH = '/prices/cash';
     const POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES = '/activities/';
@@ -60,12 +61,19 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_SLOTS = '/schedule/slots/';
     const POKITDOK_PLATFORM_API_ENDPOINT_APPOINTMENTS = '/schedule/appointments/';
     const POKITDOK_PLATFORM_API_ENDPOINT_MPC = '/mpc/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_ICD_CONVERT = '/icd/convert/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_CCD = '/ccd/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS_CONVERT = '/claims/convert';
+    const POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT = '/enrollment/snapshot';
+    const POKITDOK_PLATFORM_API_ENDPOINT_IDENTITY = '/identity/';
+    const POKITDOK_PLATFORM_API_ENDPOINT_PHARMACY_PLANS = '/pharmacy/plans';
+    const POKITDOK_PLATFORM_API_ENDPOINT_PHARMACY_FORMULARY = '/pharmacy/formulary';
 
 
     private $_usage = null;
     private $_version_path = self::POKITDOK_PLATFORM_API_VERSION_PATH;
 
-    private function applyResponse()
+    public function applyResponse()
     {
         $json_response = $this->getResponseBody();
         if (!($json_response instanceof \stdClass)) {
@@ -136,7 +144,6 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Usage statistics for most recent request
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#overview
      *
      * @return \stdClass Object
      * 	    rate_limit_cap, {int} The amount of requests available per hour
@@ -175,7 +182,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Retrieve the data for a specified provider id or query parameters
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#providers
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param mixed $providers_request String of the PokitDok UUID for the provider OR Array of query parameters
      *  Query parameters:
@@ -206,7 +213,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Determine eligibility via an EDI 270 Request For Eligibility.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#eligibility
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $eligibility_request Array representing an EDI 270 Request For Eligibility as JSON
      * @return \PokitDok\Common\HttpResponse Response object with eligibility data
@@ -235,7 +242,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Create a new claim, via the filing of an EDI 837 Professional Claims, to the designated Payer.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#claims
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $claims_request Array representing EDI 837 Professional Claim as JSON
      * @return \PokitDok\Common\HttpResponse Response object with claims data
@@ -255,14 +262,14 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Ascertain the status of the specified claim, via the filing of an EDI 276 Claims Status.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#claimstatus
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $claims_status Array representing EDI 276 Claims Status as JSON
      * @return \PokitDok\Common\HttpResponse Response object with claimsStatus data,
      *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function claimsStatus(array $claims_status)
+    public function claims_status(array $claims_status)
     {
         $this->request(
             'POST',
@@ -275,28 +282,8 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
-     * File an EDI 834 benefit enrollment.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#enrollment
-     *
-     * @param array $enrollment_request representing 834 benefit enrollment as JSON
-     * @return \PokitDok\Common\HttpResponse Response object with enrollment data
-     * @throws \Exception On HTTP errors (status > 299)
-     */
-    public function enrollment(array $enrollment_request)
-    {
-        $this->request(
-            'POST',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT,
-            $enrollment_request,
-            "application/json"
-        );
-
-        return $this->applyResponse();
-    }
-
-    /**
      * Return a list of insurance prices for a given procedure (by CPT Code) in a given region (by ZIP Code).
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#insuranceprices
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $price_insurance_request Array of price query parameters
      *  Query parameters:
@@ -305,7 +292,7 @@ class PlatformClient extends Oauth2ApplicationClient
      * @return \PokitDok\Common\HttpResponse Response object with priceInsurance data,
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function pricesInsurance(array $price_insurance_request)
+    public function insurance_prices(array $price_insurance_request)
     {
         $this->request(
             'GET',
@@ -319,7 +306,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Return a list of cash prices for a given procedure (by CPT Code) in a given region (by ZIP Code).
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#cashprices
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $price_cash_request Array of price query parameters
      *  Query parameters:
@@ -328,7 +315,7 @@ class PlatformClient extends Oauth2ApplicationClient
      * @return \PokitDok\Common\HttpResponse Response object with priceCash data,
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function pricesCash(array $price_cash_request)
+    public function cash_prices(array $price_cash_request)
     {
         $this->request(
             'GET',
@@ -344,7 +331,7 @@ class PlatformClient extends Oauth2ApplicationClient
      * Call the activities endpoint to get a listing of current activities,
      * a query string parameter ‘parent_id’ may also be used with this API to get information about
      * sub-activities that were initiated from a batch file upload.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#activities
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param mixed $activities_request String of the PokitDok ID for the activity OR Array of query parameters
      *  Query parameters:
@@ -383,6 +370,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Submit X12 formatted EDI file for batch processing.
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param string $edi_file full path and filename of EDI file to submit
      * @param string $trading_partner_id The trading partner id
@@ -393,7 +381,12 @@ class PlatformClient extends Oauth2ApplicationClient
     public function files($edi_file, $trading_partner_id, $callback_url = null)
     {
         $post_params = array();
-        $post_params['file'] = "@". $edi_file .";type=application/EDI-X12;filename=". basename($edi_file);
+
+        if(PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 5) {
+            $post_params['file'] = new \CURLFile($edi_file, "application/EDI-X12", basename($edi_file));
+        } else {
+            $post_params['file'] = "@". $edi_file .";type=application/EDI-X12;filename=". basename($edi_file);
+        }
         $post_params['trading_partner_id'] = $trading_partner_id;
         if ($callback_url !== null) {
             $post_params['callback_url'] = $callback_url;
@@ -409,16 +402,16 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
-     * Retrieve a list of trading partners or submit an id to get info for a
-     * specific trading partner.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#tradingpartners
-     *
-     * @param string $trading_partner_id id of the requested trading partner
-     *                                   leave blank for full listing
-     * @return \PokitDok\Common\HttpResponse Response object with trading partner data
-     * @throws \Exception On HTTP errors (status > 299)
-     */
-     public function trading_partners($trading_partner_id = '')
+      * Retrieve a list of trading partners or submit an id to get info for a
+      * specific trading partner.
+      * See docs here: https://platform.pokitdok.com/
+      *
+      * @param string $trading_partner_id id of the requested trading partner
+      *                                   leave blank for full listing
+      * @return \PokitDok\Common\HttpResponse Response object with trading partner data
+      * @throws \Exception On HTTP errors (status > 299)
+      */
+    public function trading_partners($trading_partner_id = '')
      {
        $this->request(
            'GET',
@@ -430,43 +423,32 @@ class PlatformClient extends Oauth2ApplicationClient
        return $this->applyResponse();
      }
 
-     /**
+    /**
       * Retrieve data on plans based on the parameters given.
-      * See docs here: https://platform.pokitdok.com/documentation/v4#/#plans
+      * See docs here: https://platform.pokitdok.com/
       *
       * @param array $plans_request Array of query parameters.
-      * Query Parameters:
-      *   trading_partner_id, {string} The trading partner id of the payer
-      *     offering the plan.
-      *   county, {string} The county in which the plan is available.
-      *   state, {string} The state in which the plan is available.
-      *   plan_id, {string} The identifier for the plan.
-      *   plan_type, {string} The type of plan (e.g. EPO, PPO, HMO, POS).
-      *   plan_name, {string} The name of the plan.
-      *   metallic_level, {string} The metal level of the plan.
       * @return \PokitDok\Common\HttpResponse Response object with plans data,
-      *         see documentation on https://platform.pokitdok.com/
       * @throws \Exception On HTTP errors (status > 299)
       */
-      public function plans(array $plans_request = array())
-      {
-        $this->request(
-            'GET',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_PLANS,
-            $plans_request,
-            "application/json"
-        );
+    public function plans(array $plans_request = array())
+    {
+    $this->request(
+        'GET',
+        self::POKITDOK_PLATFORM_API_ENDPOINT_PLANS,
+        $plans_request,
+        "application/json"
+    );
 
-        return $this->applyResponse();
-      }
+    return $this->applyResponse();
+    }
 
     /**
      * Request approval for a referral to another health care provider.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#referrals
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $referral_request Array representing a referral request
      * @return \PokitDok\Common\HttpResponse Response object with referral data,
-     *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
      */
     public function referrals(array $referral_request)
@@ -483,11 +465,10 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Submit an authorization request.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#/#authorizations
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $authorization_request Array representing an authorization request
      * @return \PokitDok\Common\HttpResponse Response object with authorization data,
-     *      see API documentation on https://platform.pokitdok.com/
      * @throws \Exception On HTTP errors (status > 299)
      */
     public function authorizations(array $authorization_request)
@@ -504,7 +485,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Get a list of (or specific by UUID) the supported Scheduling Systems and their details.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param string $schedulers_request string The UUID of the Scheduler (scheduler_uuid), empty gets the entire list
      * @return \PokitDok\Common\HttpResponse Response object with scheduler details,
@@ -524,7 +505,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Get a list of (or specific by UUID) the supported Appointment Types and their details.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param string $appointment_types_request The UUID of the Appointment Type (appointment_type_uuid), empty gets
      *          the entire list
@@ -543,21 +524,14 @@ class PlatformClient extends Oauth2ApplicationClient
     }
 
     /**
-     * Create an open slot given details. Only valid use is for PokitDok Scheduler only providers.
-     * {
-     *      "pd_provider_uuid": "fd0d75d2-6285-4ecc-aca0-017f0f313bd6",
-     *      "location": [32.7844314, -79.9994895], // geo location
-     *      "appointment_type": "ATYP1", // appointment type name
-     *      "start_date": "2014-03-17T08:00:00", // formatted as ISO8601
-     *      "end_date": "2014-03-17T09:00:00" // formatted as ISO8601
-     * }
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * Submit an open slot for a provider's schedule
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array $create_slot_request Array of open slot details
      * @return \PokitDok\Common\HttpResponse Response object of the booked Appointment
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function create_slot(array $create_slot_request)
+    public function schedule_slots(array $create_slot_request)
     {
         $this->request(
             'POST',
@@ -572,7 +546,7 @@ class PlatformClient extends Oauth2ApplicationClient
     /**
      * Query for open appointment slots (using pd_provider_uuid and location) or booked appointments
      *      (using patient_uuid) given query parameters, or get a single appointment given a UUID (pd_appointment_uuid)
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param array|string $appointments_request Array of query parameters or string of the UUID (pd_appointment_uuid)
      * @return \PokitDok\Common\HttpResponse Response object with Open Slot or Appointment details
@@ -591,7 +565,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Book appointment for an open slot. Put data contains patient attributes and description.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param string $book_appointment_uuid The Appointment UUID (pd_appointment_uuid) to book
      * @param array $book_appointment_request Array of the patient attributes and description
@@ -612,7 +586,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Update appointment description. Put data contains description.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param string $update_appointment_uuid The Appointment UUID (pd_appointment_uuid) to update
      * @param array $update_appointment_request Array of the description
@@ -633,7 +607,7 @@ class PlatformClient extends Oauth2ApplicationClient
 
     /**
      * Cancel an Appointment.
-     * See docs here: https://platform.pokitdok.com/documentation/v4#scheduling
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param string $cancel_appointment_uuid The Appointment UUID (pd_appointment_uuid) to cancel
      * @return \PokitDok\Common\HttpResponse Response object of the booked Appointment
@@ -651,13 +625,13 @@ class PlatformClient extends Oauth2ApplicationClient
     /**
      * The Medical Procedure Code resource provides access to clinical and consumer friendly information related to
      * medical procedures.
+     * See docs here: https://platform.pokitdok.com/
      *
      * @param mixed $medical_procedure_code Optional, String of a specific procedure code OR an Array of query params.
      *      Query Parameters:
      *          name, Search medical procedure information by consumer friendly name
      *          description, A partial or full description to be used to locate medical procedure information
-     * @return \PokitDok\Common\HttpResponse Response object with medical procedure code data,
-     *      see API documentation on https://platform.pokitdok.com/
+     * @return \PokitDok\Common\HttpResponse Response object with medical procedure code data
      * @throws \Exception
      */
     public function medical_procedure_code($medical_procedure_code = '')
@@ -668,6 +642,318 @@ class PlatformClient extends Oauth2ApplicationClient
             $medical_procedure_code,
             "application/json"
         );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Submit a continuity of care document (CCD) request
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param array $ccd_request Required, array representing a CCD request
+     * @return \PokitDok\Common\HttpResponse Response object
+     * @throws \Exception
+     */
+    public function ccd(array $ccd_request)
+    {
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_CCD,
+            $ccd_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * The ICD Convert resource will return Diagnosis Mapping information by code (ICD-9 or ICD-10)
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param mixed $diagnosis_code Required, String of a specific diagnosis code
+     * @return \PokitDok\Common\HttpResponse Response object Diagnosis Mapping information by code (ICD-9 or ICD-10),
+     * @throws \Exception
+     */
+    public function icd_convert($diagnosis_code)
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_ICD_CONVERT,
+            $diagnosis_code,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Submit X12 formatted 837 EDI file and map any ICD-9 codes to ICD-10.
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param string $claim_file full path and filename of EDI file to submit
+     * @param string $callback_url Optional notification url to be called when the asynchronous processing is complete
+     * @return \PokitDok\Common\HttpResponse
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function claims_convert($claim_file, $callback_url = null)
+    {
+        $post_params = array();
+        if(PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 5) {
+            $post_params['file'] = new \CURLFile($claim_file, "application/EDI-X12", basename($claim_file));
+        } else {
+            $post_params['file'] = "@". $claim_file .";type=application/EDI-X12;filename=". basename($claim_file);
+        }
+        if ($callback_url !== null) {
+            $post_params['callback_url'] = $callback_url;
+        }
+
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS_CONVERT,
+            $post_params
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * File an EDI 834 benefit enrollment.
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param array $enrollment_request representing 834 benefit enrollment as JSON
+     * @return \PokitDok\Common\HttpResponse Response object with enrollment data
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function enrollment(array $enrollment_request)
+    {
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT,
+            $enrollment_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Submit a X12 834 file to the platform to establish the enrollment information within it
+     * as the current membership enrollment snapshot for a trading partner
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param string $enrollment_file full path and filename of X12 834 EDI file to submit
+     * @param string $trading_partner_id The trading partner id
+     * @param string $callback_url Optional notification url to be called when the asynchronous processing is complete
+     * @return \PokitDok\Common\HttpResponse
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function enrollment_snapshot($enrollment_file, $trading_partner_id, $callback_url = null)
+    {
+        $post_params = array();
+        if(PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 5) {
+            $post_params['file'] = new \CURLFile($enrollment_file, "application/EDI-X12", basename($enrollment_file));
+        } else {
+            $post_params['file'] = "@". $enrollment_file .";type=application/EDI-X12;filename=". basename($enrollment_file);
+        }
+        $post_params['trading_partner_id'] = $trading_partner_id;
+        if ($callback_url !== null) {
+            $post_params['callback_url'] = $callback_url;
+        }
+
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT,
+            $post_params
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * List enrollment snapshots that are stored for the client application or get a specific snapshot by id
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param null $snapshot_id
+     * @return \PokitDok\Common\HttpResponse
+     * @throws \Exception
+     */
+    public function get_enrollment_snapshot($snapshot_id = null)
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT,
+            is_null($snapshot_id) ? null : "/". $snapshot_id,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+
+    }
+
+    /**
+     * List enrollment request objects that make up the specified enrollment snapshot
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param null $snapshot_id
+     * @return \PokitDok\Common\HttpResponse
+     * @throws \Exception
+     */
+    public function get_enrollment_snapshot_data($snapshot_id)
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT ."/". $snapshot_id . "/data",
+            null,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Creates an identity resource
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param array $create_identity_request Required, array representing a identity request
+     * @return \PokitDok\Common\HttpResponse Response object
+     * @throws \Exception
+     */
+    public function create_identity(array $create_identity_request)
+    {
+        $this->request(
+            'POST',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_IDENTITY,
+            $create_identity_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Update identity resource.
+     *
+     * @param string $update_identity_uuid The identity UUID to update
+     * @param array $update_identity_request Array of the identity resource
+     * @return \PokitDok\Common\HttpResponse Response object of the identity resource
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function update_identity($update_identity_uuid, array $update_identity_request)
+    {
+        $this->request(
+            'PUT',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_IDENTITY . $update_identity_uuid,
+            $update_identity_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Query for identity
+     *      given query parameters, or get a single identity given a UUID
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param array|string $identity_request Array of query parameters or string of the UUID
+     * @return \PokitDok\Common\HttpResponse Response object with identity resource
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function identity($identity_request = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_IDENTITY,
+            $identity_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Query for identity history
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param string $identity_uuid string of the UUID
+     * @param string $identity_version_id string of the version identifier
+     * @return \PokitDok\Common\HttpResponse Response object with identity resource
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function identity_history($identity_uuid, $identity_version_id = null)
+    {
+        $identity_path = self::POKITDOK_PLATFORM_API_ENDPOINT_IDENTITY . $identity_uuid . "/history";
+        if (!is_null($identity_version_id)) {
+            $identity_path .= "/" . $identity_version_id;
+        }
+
+        $this->request(
+            'GET',
+            $identity_path,
+            null,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Query for pharmacy plans
+     *      given query parameters, or get a single pharmacy plans given a UUID
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param array|string $pharmacy_plan_request Array of query parameters or string of the UUID
+     * @return \PokitDok\Common\HttpResponse Response object with identity resource
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function pharmacy_plans($pharmacy_plan_request = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_PHARMACY_PLANS,
+            $pharmacy_plan_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Query for pharmacy formulary
+     *      given query parameters, or get a single pharmacy formulary given a UUID
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param array|string $pharmacy_formulary_request Array of query parameters or string of the UUID
+     * @return \PokitDok\Common\HttpResponse Response object with identity resource
+     * @throws \Exception On HTTP errors (status > 299)
+     */
+    public function pharmacy_formulary($pharmacy_formulary_request = '')
+    {
+        $this->request(
+            'GET',
+            self::POKITDOK_PLATFORM_API_ENDPOINT_PHARMACY_FORMULARY,
+            $pharmacy_formulary_request,
+            "application/json"
+        );
+
+        return $this->applyResponse();
+    }
+
+    /**
+     * Perform a general PokitDok Platform API request
+     * See docs here: https://platform.pokitdok.com/
+     *
+     * @param string $request_type The HTTP verb of the request
+     * @param string $request_path The URL path of the request
+     * @param null $parameters Query parameters (array: formatted as query params or string: appended to URL path), or
+     *      Post parameters (array representing JSON document if content is '', or array of body fields)
+     * @param string $content_type
+     * @return \PokitDok\Common\HttpResponse
+     * @throws \Exception
+     */
+    public function request($request_type, $request_path, $parameters = null, $content_type = '')
+    {
+        parent::request($request_type, $request_path, $parameters, $content_type);
 
         return $this->applyResponse();
     }

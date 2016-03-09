@@ -1,10 +1,15 @@
 <?php
-// Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
-// http://www.pokitdok.com
-//
-// Please see the LICENSE.txt file for more information.
-// All other rights reserved.
-//
+/**
+ * Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
+ * http://www.pokitdok.com
+ *
+ * Please see the LICENSE.txt file for more information.
+ * All other rights reserved.
+ *
+ *	PokitDok Platform Client for PHP
+ *		Consume the REST based PokitDok platform API
+ *		https://platform.pokitdok.com/
+ */
 
 
 namespace PokitDok\Common;
@@ -345,6 +350,7 @@ class Oauth2ApplicationClient {
 
         $this->retrieve_access_token();
         $this->get_handle();
+
         curl_setopt($this->_ch, CURLOPT_CUSTOMREQUEST, $request_type);
 
         $headers = array(sprintf('Authorization: Bearer %s', $this->_access_token));
@@ -372,6 +378,7 @@ class Oauth2ApplicationClient {
 
         curl_setopt($this->_ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($this->_ch, CURLOPT_HEADER, true);
+        curl_setopt($this->_ch, CURLOPT_USERAGENT, "php-pokitdok/1.1.0");
 
         $response = curl_exec($this->_ch);
 

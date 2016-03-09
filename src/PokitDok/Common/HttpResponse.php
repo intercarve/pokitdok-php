@@ -1,10 +1,15 @@
 <?php
-// Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
-// http://www.pokitdok.com
-//
-// Please see the LICENSE.txt file for more information.
-// All other rights reserved.
-//
+/**
+ * Copyright (C) 2014, All Rights Reserved, PokitDok, Inc.
+ * http://www.pokitdok.com
+ *
+ * Please see the LICENSE.txt file for more information.
+ * All other rights reserved.
+ *
+ *	PokitDok Platform Client for PHP
+ *		Consume the REST based PokitDok platform API
+ *		https://platform.pokitdok.com/
+ */
 
 namespace PokitDok\Common;
 
@@ -21,7 +26,7 @@ class HttpResponse {
     public function __construct($response)
     {
         $this->_response = $response;
-        $this->_header_length = strpos($response, self::HTTP_HEADER_BREAK) + strlen(self::HTTP_HEADER_BREAK);
+        $this->_header_length = strrpos($response, self::HTTP_HEADER_BREAK) + strlen(self::HTTP_HEADER_BREAK);
         $this->_headers = array();
         $this->_body = "";
 
