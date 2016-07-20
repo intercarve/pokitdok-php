@@ -185,6 +185,11 @@ $client->request(
 
 ```
 
+## Check SSL protocol and cipher
+```php
+$client->request('GET', '/ssl/');
+```
+
 ## Tested PHP Versions
 This library aims to support and is tested against these PHP versions:
 * php >= 5.3
