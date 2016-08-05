@@ -51,7 +51,6 @@ class PlatformClient extends Oauth2ApplicationClient
     const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_INSURANCE = '/prices/insurance';
     const POKITDOK_PLATFORM_API_ENDPOINT_PRICE_CASH = '/prices/cash';
     const POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES = '/activities/';
-    const POKITDOK_PLATFORM_API_ENDPOINT_FILES = '/files/';
     const POKITDOK_PLATFORM_API_ENDPOINT_TRADING_PARTNERS = '/tradingpartners/';
     const POKITDOK_PLATFORM_API_ENDPOINT_PLANS = '/plans/';
     const POKITDOK_PLATFORM_API_ENDPOINT_REFERRALS = '/referrals/';
@@ -339,18 +338,13 @@ class PlatformClient extends Oauth2ApplicationClient
      *  name, {string} Activity name
      *  callback_url, {string} URL that will be invoked to notify the client application that this Activity has completed.
      *  	We recommend that you always use https for callback URLs used by your application.
-     *  file_url, {string} URL where batch transactions that were uploaded to be processed within this activity are stored.
-     *  	X12 files uploaded via the /files endpoint are stored here.
      *  history, {list} Historical status of the progress of this Activity
      *  state, {dict} Current state of this Activity
      *  transition_path, {list} The list of state transitions that will be used for this Activity.
      *  remaining_transitions, {list} The list of remaining state transitions that the activity has yet to go through.
      *  parameters, {dict} The parameters that were originally supplied to the activity
      *  units_of_work, {int} The number of ‘units of work’ that the activity is operating on.
-     *  	This will typically be 1 for real-time requests like /eligibility.
-     *  	When uploading batch X12 files via the /files endpoint, this will be the number of ‘transactions’ within
-     *  	that file.  For example, if a client application POSTs a file of 20 eligibility requests to the /files API,
-     *  	the units_of_work value for that activity will be 20 after the X12 file has been analyzed.  If an activity
+     *  	This will typically be 1 for real-time requests like /eligibility.  If an activity
      *  	does show a value greater than 1 for units_of_work, the client application can fetch detailed information
      *  	about each one of the activities processing those units of work by using the
      *  	/activities/?parent_id=&lt;activity_id&gt; API
@@ -363,39 +357,6 @@ class PlatformClient extends Oauth2ApplicationClient
             'GET',
             self::POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES,
             $activities_request
-        );
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * Submit X12 formatted EDI file for batch processing.
-     * See docs here: https://platform.pokitdok.com/
-     *
-     * @param string $edi_file full path and filename of EDI file to submit
-     * @param string $trading_partner_id The trading partner id
-     * @param string $callback_url Optional notification url to be called when the asynchronous processing is complete
-     * @return \PokitDok\Common\HttpResponse
-     * @throws \Exception On HTTP errors (status > 299)
-     */
-    public function files($edi_file, $trading_partner_id, $callback_url = null)
-    {
-        $post_params = array();
-
-        if(PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 5) {
-            $post_params['file'] = new \CURLFile($edi_file, "application/EDI-X12", basename($edi_file));
-        } else {
-            $post_params['file'] = "@". $edi_file .";type=application/EDI-X12;filename=". basename($edi_file);
-        }
-        $post_params['trading_partner_id'] = $trading_partner_id;
-        if ($callback_url !== null) {
-            $post_params['callback_url'] = $callback_url;
-        }
-
-        $this->request(
-            'POST',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_FILES,
-            $post_params
         );
 
         return $this->applyResponse();
