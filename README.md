@@ -146,9 +146,6 @@ $claims_status = $client->claimsStatus(array(
 ));
 
 
-# Submit X12 files directly for processing on the platform
-$client->files("./src/PokitDok/Tests/general-physician-office-visit.270", "MOCKPAYER");
-
 # Check on pending platform activities
 
 # check on a specific activity
