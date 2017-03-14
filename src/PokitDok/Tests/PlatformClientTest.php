@@ -349,8 +349,8 @@ class PlatformClientTest extends \PHPUnit_Framework_TestCase
         )
     );
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = '';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = '';
+    const POKITDOK_PLATFORM_API_CLIENT_ID = getenv('POKITDOK_CLIENT_ID');
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = getenv('POKITDOK_CLIENT_SECRET');
     const POKITDOK_PLATFORM_API_SITE = 'https://platform.pokitdok.com';
 
     /**
