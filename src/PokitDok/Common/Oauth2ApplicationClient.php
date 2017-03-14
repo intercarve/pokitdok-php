@@ -378,7 +378,8 @@ class Oauth2ApplicationClient {
 
         curl_setopt($this->_ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($this->_ch, CURLOPT_HEADER, true);
-        curl_setopt($this->_ch, CURLOPT_USERAGENT, "php-pokitdok/1.1.0");
+        $user_agent = "php-pokitdok#1.1.0#" . php_uname("s") . "#" . php_uname("r");
+        curl_setopt($this->_ch, CURLOPT_USERAGENT, $user_agent);
 
         $response = curl_exec($this->_ch);
 
