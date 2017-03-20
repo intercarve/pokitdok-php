@@ -18,8 +18,18 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 ## Tests
 ```
 Obtain a Test account key and secret from https://platform.pokitdok.com and update src/PokitDok/Tests/PlatformClientTest.php with your POKITDOK_PLATFORM_API_CLIENT_ID and POKITDOK_PLATFORM_API_CLIENT_SECRET.
+```
+This library is tested within the [official Docker images](https://hub.docker.com/_/php/) for the following Python versions:
 
-phpunit src/PokitDok/Tests/
+* 5.6
+* 7.0
+* 7.1
+
+If you already have docker, you can run the tests yourself via docker by running the testing script included in this repository:
+
+```
+    $ sh run_tests_in_docker.sh
+
 ```
 
 ## Resources
@@ -186,11 +196,6 @@ $client->request(
 ```php
 $client->request('GET', '/ssl/');
 ```
-
-## Tested PHP Versions
-This library aims to support and is tested against these PHP versions:
-* php >= 5.3
-
 
 ## License
 Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.
