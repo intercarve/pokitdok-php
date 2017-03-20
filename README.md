@@ -19,7 +19,7 @@ Simply add a dependency on pokitdok/pokitdok-php to your project's composer.json
 ```
 Obtain a Test account key and secret from https://platform.pokitdok.com and update src/PokitDok/Tests/PlatformClientTest.php with your POKITDOK_PLATFORM_API_CLIENT_ID and POKITDOK_PLATFORM_API_CLIENT_SECRET.
 ```
-This library is tested within the [official Docker images](https://hub.docker.com/_/php/) for the following Python versions:
+This library is tested within the [official Docker images](https://hub.docker.com/_/php/) for the following versions:
 
 * 5.6
 * 7.0
