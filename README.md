@@ -198,7 +198,7 @@ $client->request('GET', '/ssl/');
 ```
 
 ## License
-Copyright (c) 2014 PokitDok Inc. See [LICENSE][] for details.
+Copyright (c) 2017 PokitDok Inc. See [LICENSE][] for details.
 
 [license]: LICENSE.txt
 
