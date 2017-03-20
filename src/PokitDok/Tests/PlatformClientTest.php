@@ -191,8 +191,8 @@ class PlatformClientTest extends \PHPUnit\Framework\TestCase
 
     private $claims_convert_request_file = "./src/PokitDok/Tests/claims_convert.837";
 
-    const POKITDOK_PLATFORM_API_CLIENT_ID = '';
-    const POKITDOK_PLATFORM_API_CLIENT_SECRET = '';
+    const POKITDOK_PLATFORM_API_CLIENT_ID = 'JQNkJzgP8iKGKEmE2Ajt';
+    const POKITDOK_PLATFORM_API_CLIENT_SECRET = '1SjCScfFhYzLG42Jv3srE4buUE4yc5ZjdhEGCOmw';
     const POKITDOK_PLATFORM_API_SITE = 'https://platform.pokitdok.com';
 
     /**
