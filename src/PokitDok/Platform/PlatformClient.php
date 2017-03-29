@@ -659,11 +659,7 @@ class PlatformClient extends Oauth2ApplicationClient
     public function claims_convert($claim_file, $callback_url = null)
     {
         $post_params = array();
-        if(PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 5) {
-            $post_params['file'] = new \CURLFile($claim_file, "application/EDI-X12", basename($claim_file));
-        } else {
-            $post_params['file'] = "@". $claim_file .";type=application/EDI-X12;filename=". basename($claim_file);
-        }
+        $post_params['file'] = new \CURLFile($claim_file, "application/EDI-X12", basename($claim_file));
         if ($callback_url !== null) {
             $post_params['callback_url'] = $callback_url;
         }
@@ -672,100 +668,6 @@ class PlatformClient extends Oauth2ApplicationClient
             'POST',
             self::POKITDOK_PLATFORM_API_ENDPOINT_CLAIMS_CONVERT,
             $post_params
-        );
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * File an EDI 834 benefit enrollment.
-     * See docs here: https://platform.pokitdok.com/
-     *
-     * @param array $enrollment_request representing 834 benefit enrollment as JSON
-     * @return \PokitDok\Common\HttpResponse Response object with enrollment data
-     * @throws \Exception On HTTP errors (status > 299)
-     */
-    public function enrollment(array $enrollment_request)
-    {
-        $this->request(
-            'POST',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT,
-            $enrollment_request,
-            "application/json"
-        );
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * Submit a X12 834 file to the platform to establish the enrollment information within it
-     * as the current membership enrollment snapshot for a trading partner
-     * See docs here: https://platform.pokitdok.com/
-     *
-     * @param string $enrollment_file full path and filename of X12 834 EDI file to submit
-     * @param string $trading_partner_id The trading partner id
-     * @param string $callback_url Optional notification url to be called when the asynchronous processing is complete
-     * @return \PokitDok\Common\HttpResponse
-     * @throws \Exception On HTTP errors (status > 299)
-     */
-    public function enrollment_snapshot($enrollment_file, $trading_partner_id, $callback_url = null)
-    {
-        $post_params = array();
-        if(PHP_MAJOR_VERSION == 5 && PHP_MINOR_VERSION >= 5) {
-            $post_params['file'] = new \CURLFile($enrollment_file, "application/EDI-X12", basename($enrollment_file));
-        } else {
-            $post_params['file'] = "@". $enrollment_file .";type=application/EDI-X12;filename=". basename($enrollment_file);
-        }
-        $post_params['trading_partner_id'] = $trading_partner_id;
-        if ($callback_url !== null) {
-            $post_params['callback_url'] = $callback_url;
-        }
-
-        $this->request(
-            'POST',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT,
-            $post_params
-        );
-
-        return $this->applyResponse();
-    }
-
-    /**
-     * List enrollment snapshots that are stored for the client application or get a specific snapshot by id
-     * See docs here: https://platform.pokitdok.com/
-     *
-     * @param null $snapshot_id
-     * @return \PokitDok\Common\HttpResponse
-     * @throws \Exception
-     */
-    public function get_enrollment_snapshot($snapshot_id = null)
-    {
-        $this->request(
-            'GET',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT,
-            is_null($snapshot_id) ? null : "/". $snapshot_id,
-            "application/json"
-        );
-
-        return $this->applyResponse();
-
-    }
-
-    /**
-     * List enrollment request objects that make up the specified enrollment snapshot
-     * See docs here: https://platform.pokitdok.com/
-     *
-     * @param null $snapshot_id
-     * @return \PokitDok\Common\HttpResponse
-     * @throws \Exception
-     */
-    public function get_enrollment_snapshot_data($snapshot_id)
-    {
-        $this->request(
-            'GET',
-            self::POKITDOK_PLATFORM_API_ENDPOINT_ENROLLMENT_SNAPSHOT ."/". $snapshot_id . "/data",
-            null,
-            "application/json"
         );
 
         return $this->applyResponse();
