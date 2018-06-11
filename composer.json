@@ -1,5 +1,5 @@
 {
-    "name": "pokitdok/pokitdok-php",
+    "name": "intercarve/pokitdok-php",
     "description": "PHP client for http://platform.pokitdok.com",
     "type": "library",
     "keywords": ["health", "healthcare", "edi", "x12", "claims", "eligibility", "provider", "doctor", "patient"],
