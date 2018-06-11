@@ -343,7 +343,7 @@ class Oauth2ApplicationClient {
      * @return mixed HTTP status code returned
      * @throws \Exception On errors (>299 status response)
      */
-    public function request($request_type, $request_path, $parameters = null, $content_type = '')
+    public function request($request_type, $request_path, $parameters = null, $content_type = '', $accept = '')
     {
         $this->_response = null;
         $this->_status = 0;
@@ -374,6 +374,9 @@ class Oauth2ApplicationClient {
 
         if ($content_type !== '') {
             $headers[] = sprintf('Content-Type:  %s', $content_type);
+        }
+        if ($accept !== '') {
+            $headers[] = sprintf('Accept:  %s', $accept);
         }
 
         curl_setopt($this->_ch, CURLOPT_HTTPHEADER, $headers);

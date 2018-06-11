@@ -814,9 +814,9 @@ class PlatformClient extends Oauth2ApplicationClient
      * @return \PokitDok\Common\HttpResponse
      * @throws \Exception
      */
-    public function request($request_type, $request_path, $parameters = null, $content_type = '')
+    public function request($request_type, $request_path, $parameters = null, $content_type = '', $accept = '')
     {
-        parent::request($request_type, $request_path, $parameters, $content_type);
+        parent::request($request_type, $request_path, $parameters, $content_type, $accept);
 
         return $this->applyResponse();
     }
