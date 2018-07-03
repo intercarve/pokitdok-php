@@ -354,7 +354,6 @@ class Oauth2ApplicationClient {
         curl_setopt($this->_ch, CURLOPT_CUSTOMREQUEST, $request_type);
 
         $headers = array(sprintf('Authorization: Bearer %s', $this->_access_token));
-
         if ($request_type === 'GET' || $request_type === 'DELETE') {
             curl_setopt(
                 $this->_ch,

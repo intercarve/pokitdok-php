@@ -218,14 +218,18 @@ class PlatformClient extends Oauth2ApplicationClient
      * @return \PokitDok\Common\HttpResponse Response object with eligibility data
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function eligibility(array $eligibility_request)
+    public function eligibility(array $eligibility_request, $accept = 'application/json')
     {
         $this->request(
             'POST',
             self::POKITDOK_PLATFORM_API_ENDPOINT_ELIGIBILITY,
             $eligibility_request,
-            "application/json"
+            "application/json",
+			$accept
         );
+		if ($accept != 'application/json') {
+			return $this->getResponseBody();
+		}
 
         if (empty($eligibility_request)) {
             $json_response = $this->getResponseBody();
@@ -351,14 +355,18 @@ class PlatformClient extends Oauth2ApplicationClient
      * @return \PokitDok\Common\HttpResponse Response object with activities data
      * @throws \Exception On HTTP errors (status > 299)
      */
-    public function activities($activities_request = '')
+    public function activities($activities_request = '', $accept = 'application/json')
     {
         $this->request(
             'GET',
             self::POKITDOK_PLATFORM_API_ENDPOINT_ACTIVITIES,
-            $activities_request
+            $activities_request,
+			'application/json',
+			$accept
         );
-
+		if ($accept != 'application/json') {
+			return $this->getResponseBody();
+		}
         return $this->applyResponse();
     }
 
